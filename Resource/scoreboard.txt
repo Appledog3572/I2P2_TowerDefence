@@ -7,4 +7,5 @@ MeiHua 20
 DaHua 30
 DaMei 40
 DaWang 50
-XiaoWang 60
+XiaoWang 80
+David 100

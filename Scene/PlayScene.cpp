@@ -270,6 +270,7 @@ void PlayScene::OnKeyDown(int keyCode) {
 					return;
 				++it;
 			}
+            money += 10000;
 			EffectGroup->AddNewObject(new Plane());
 		}
 	}
@@ -295,7 +296,7 @@ void PlayScene::Hit() {
 	lives--;
 	UILives->Text = std::string("Life ") + std::to_string(lives);
 	if (lives <= 0) {
-		Engine::GameEngine::GetInstance().ChangeScene("lose-scene");
+		Engine::GameEngine::GetInstance().ChangeScene("lose");
 	}
 }
 int PlayScene::GetMoney() const {
