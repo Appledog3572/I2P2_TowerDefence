@@ -15,11 +15,11 @@ public:
 
     void Terminate() override;
 
-    void BackOnClick(int stage);
+    void BackOnClick();
 
-    void PrevOnClick(int stage);
+    void PrevOnClick();
 
-    void NextOnClick(int stage);
+    void NextOnClick();
 
     void ReadScore();
 
@@ -29,8 +29,8 @@ public:
 };
 
 struct compare{
-    bool operator()(const std::pair<std::string, std::string> &lhs, const std::pair<std::string, std::string> &rhs) const{
-        return stoi(rhs.second) <= stoi(lhs.second);
+    bool operator()(const std::tuple<std::string, std::string, std::string> &lhs, const std::tuple<std::string, std::string, std::string> &rhs) const{
+        return stoi(std::get<1>(rhs)) <= stoi(std::get<1>(lhs));
     }
 };
 #endif //INC_2024_I2P2_TOWERDEFENSE_WITH_ANSWER_SCOREBOARDSCENE_H
