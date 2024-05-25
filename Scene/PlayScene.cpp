@@ -142,6 +142,7 @@ void PlayScene::Update(float deltaTime) {
 				delete EffectGroup;
 				delete UIGroup;
 				delete imgTarget;*/
+                Score=lives*100 + money*10 - TowerGroup->GetObjects().size()*20;
 				Engine::GameEngine::GetInstance().ChangeScene("win");
 			}
 			continue;

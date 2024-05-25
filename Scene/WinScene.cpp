@@ -1,6 +1,8 @@
 #include <functional>
 #include <string>
 #include <stack>
+#include <iostream>
+#include <chrono>
 
 #include "Engine/AudioHelper.hpp"
 #include "Engine/GameEngine.hpp"
@@ -12,6 +14,7 @@
 #include "WinScene.hpp"
 #include "PlayScene.hpp"
 #include "Engine/IScene.hpp"
+#include "ScoreboardScene.h"
 
 std::string name;
 std::stack<char> nameStack;
@@ -34,6 +37,11 @@ void WinScene::Initialize() {
 	bgmId = AudioHelper::PlayAudio("win.wav");
 }
 void WinScene::Terminate() {
+    std::string Name=UIName->Text;
+    if(Name.empty()){
+        Name="UNKNOWN";
+    }
+    AddScoreboard(Name, Score, getNowTime());
 	IScene::Terminate();
 	AudioHelper::StopBGM(bgmId);
 }
@@ -52,5 +60,30 @@ void WinScene::BackOnClick() {
 
 void WinScene::OnKeyDown(int keyCode){
     IScene::OnKeyDown(keyCode);
+    if(keyCode>=ALLEGRO_KEY_A && keyCode<=ALLEGRO_KEY_Z){
+        if(UIName->Text.size()<9){
+            UIName->Text += ('A' + keyCode - 1);
+        }
+    }
+    else if(keyCode>=ALLEGRO_KEY_0 && keyCode<=ALLEGRO_KEY_9){
+        if(UIName->Text.size()<9){
+            UIName->Text += ('0' + keyCode - 27);
+        }
+    }
+    else if(keyCode==ALLEGRO_KEY_BACKSPACE){
+        if(UIName->Text.begin()!=UIName->Text.end()){
+            UIName->Text.pop_back();
+        }
+    }
+}
 
+std::string getNowTime(){
+    auto tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    struct tm* ptm = localtime(&tt);
+    char date[60] = { 0 };
+    sprintf(date, "%d/%02d/%02d_%02d:%02d",
+            (int)ptm->tm_year + 1900, (int)ptm->tm_mon + 1, (int)ptm->tm_mday,
+            (int)ptm->tm_hour, (int)ptm->tm_min);
+
+    return std::string(date);
 }

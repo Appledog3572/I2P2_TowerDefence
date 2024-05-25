@@ -19,4 +19,6 @@ public:
     void OnKeyDown(int keyCode) override;
 };
 
+std::string getNowTime();
+
 #endif // WINSCENE_HPP

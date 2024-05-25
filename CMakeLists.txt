@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories(.)
 include_directories(Resource)
 
+file(COPY ${CMAKE_CURRENT_BINARY_DIR}/Resource/scoreboard.txt DESTINATION ${CMAKE_SOURCE_DIR}/Resource)
 file(COPY Resource/audios DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY Resource/fonts DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 file(COPY Resource/images DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

@@ -51,6 +51,11 @@ void ScoreboardScene::Initialize() {
 
 void ScoreboardScene::Terminate() {
     fin->close();
+    std::ofstream fout("Resource/scoreboard.txt");
+    for(auto it: pages){
+        fout<<std::get<0>(it)<<" "<<std::get<1>(it)<<" "<<std::get<2>(it)<<std::endl;
+    }
+    fout.close();
     pages.clear();
     scoreList.clear();
     IScene::Terminate();
@@ -78,8 +83,23 @@ void ScoreboardScene::ReadScore() {
     int cnt=0;
     std::string name, score, time;
     while(*fin>>name>>score>>time){
-        pages.insert(std::tuple<std::string, std::string, std::string>(name, score, time));
-        ++cnt;
+        bool save=true;
+        for(auto it: pages){
+            if(std::get<0>(it)==name){
+                if(std::get<1>(it)<score){
+                    pages.erase(it);
+                    --cnt;
+                }
+                else{
+                    save=false;
+                }
+                break;
+            }
+        }
+        if(save){
+            pages.insert(std::tuple<std::string, std::string, std::string>(name, score, time));
+            ++cnt;
+        }
     }
     totalPages=cnt/10;
     if(cnt%10!=0){
@@ -116,4 +136,10 @@ void ScoreboardScene::ClearScore() {
         RemoveObject(it->GetObjectIterator());
     }
     scoreList.clear();
+}
+
+void AddScoreboard(std::string name, int score, std::string time){
+    std::ofstream fout("Resource/scoreboard.txt", std::ios_base::app);
+    fout<<'\n'<<name<<' '<<score<<' '<<time;
+    fout.close();
 }

@@ -6,6 +6,15 @@
 #include <string>
 #include "Engine/IScene.hpp"
 
+struct compare{
+    bool operator()(const std::tuple<std::string, std::string, std::string> &lhs, const std::tuple<std::string, std::string, std::string> &rhs) const{
+        if(std::get<1>(lhs)==std::get<1>(rhs)){
+            return std::get<0>(rhs) >= std::get<0>(lhs);
+        }
+        return stoi(std::get<1>(rhs)) <= stoi(std::get<1>(lhs));
+    }
+};
+
 class ScoreboardScene final : public Engine::IScene {
 private:
 public:
@@ -28,9 +37,6 @@ public:
     void ClearScore();
 };
 
-struct compare{
-    bool operator()(const std::tuple<std::string, std::string, std::string> &lhs, const std::tuple<std::string, std::string, std::string> &rhs) const{
-        return stoi(std::get<1>(rhs)) <= stoi(std::get<1>(lhs));
-    }
-};
+void AddScoreboard(std::string name, int score, std::string time);
+
 #endif //INC_2024_I2P2_TOWERDEFENSE_WITH_ANSWER_SCOREBOARDSCENE_H
