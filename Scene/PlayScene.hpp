@@ -9,6 +9,8 @@
 #include "Engine/IScene.hpp"
 #include "Engine/Point.hpp"
 
+extern int Score;
+
 class Turret;
 namespace Engine {
 	class Group;

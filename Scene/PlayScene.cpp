@@ -25,6 +25,7 @@
 #include "Enemy/TankEnemy.hpp"
 #include "Turret/TurretButton.hpp"
 
+int Score = 0;
 bool PlayScene::DebugMode = false;
 const std::vector<Engine::Point> PlayScene::directions = { Engine::Point(-1, 0), Engine::Point(0, -1), Engine::Point(1, 0), Engine::Point(0, 1) };
 const int PlayScene::MapWidth = 20, PlayScene::MapHeight = 13;
@@ -49,6 +50,7 @@ void PlayScene::Initialize() {
 	lives = 10;
 	money = 150;
 	SpeedMult = 1;
+    Score = 0;
 	// Add groups from bottom to top.
 	AddNewObject(TileMapGroup = new Group());
 	AddNewObject(GroundEffectGroup = new Group());
@@ -270,7 +272,7 @@ void PlayScene::OnKeyDown(int keyCode) {
 					return;
 				++it;
 			}
-            money += 10000;
+            EarnMoney(10000);
 			EffectGroup->AddNewObject(new Plane());
 		}
 	}
@@ -457,6 +459,14 @@ std::vector<std::vector<int>> PlayScene::CalculateBFSDistance() {
 		// TODO: [BFS PathFinding] (1/1): Implement a BFS starting from the most right-bottom block in the map.
 		//               For each step you should assign the corresponding distance to the most right-bottom block.
 		//               mapState[y][x] is TILE_DIRT if it is empty.
+        for(auto c: directions){
+            int newX=p.x + c.x;
+            int newY=p.y + c.y;
+            if(newX>=0 && newX<MapWidth && newY>=0 && newY<MapHeight && mapState[newY][newX]==TILE_DIRT && map[newY][newX]==-1){
+                map[newY][newX]=map[p.y][p.x]+1;
+                que.emplace(newX, newY);
+            }
+        }
 	}
 	return map;
 }
