@@ -317,19 +317,23 @@ void PlayScene::OnKeyDown(int keyCode) {
 	}
 	if (keyCode == ALLEGRO_KEY_Q) {
 		// Hotkey for MachineGunTurret.
-		UIBtnClicked(0);
+        if (money >= MachineGunTurret::Price)
+		    UIBtnClicked(0);
 	}
 	else if (keyCode == ALLEGRO_KEY_W) {
 		// Hotkey for FreezerTurret.
-		UIBtnClicked(1);
+        if (money >= FreezerTurret::Price)
+		    UIBtnClicked(1);
 	}
 	else if (keyCode == ALLEGRO_KEY_E) {
 		// Hotkey for LaserTurret.
-		UIBtnClicked(2);
+        if (money >= LaserTurret::Price)
+		    UIBtnClicked(2);
 	}
     else if (keyCode == ALLEGRO_KEY_R) {
         // Hotkey for MissileTurret.
-        UIBtnClicked(3);
+        if (money >= MissileTurret::Price)
+            UIBtnClicked(3);
     }
     else if (keyCode == ALLEGRO_KEY_SPACE) {
         // Hotkey for Shovel.
