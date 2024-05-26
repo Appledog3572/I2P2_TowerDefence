@@ -5,8 +5,7 @@
 | **Hackathon Tasks**              | **Score** | **Check** |
 | :------------------------------- | :-------: | :-------: |
 | Add `StartScene`                 |    5%     |     -     |
-| Add `StageSelectScene`           |    5%     |     -     |
-| Move Controls to `SettingsScene` |    5%     |     -     |
+| Add `SettingsScene`              |    10%    |     -     |
 | Fix Bugs in Scene                |    15%    |     -     |
 
 | **Project Tasks**           | **Score** | **Check** |

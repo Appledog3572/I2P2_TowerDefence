@@ -16,7 +16,7 @@
 int w, h, halfW, halfH, currentPage, totalPages;
 std::ifstream *fin;
 std::list<Engine::IObject*> scoreList;
-std::set<std::tuple<std::string, std::string, std::string>, compare> pages;
+std::set<std::tuple<std::string, std::string, std::string, std::string>, compare> pages;
 
 void ScoreboardScene::Initialize() {
     w = Engine::GameEngine::GetInstance().GetScreenSize().x;
@@ -53,7 +53,7 @@ void ScoreboardScene::Terminate() {
     fin->close();
     std::ofstream fout("Resource/scoreboard.txt");
     for(auto it: pages){
-        fout<<std::get<0>(it)<<" "<<std::get<1>(it)<<" "<<std::get<2>(it)<<std::endl;
+        fout<<std::get<0>(it)<<" "<<std::get<1>(it)<<" "<<std::get<2>(it)<<" "<<std::get<3>(it)<<std::endl;
     }
     fout.close();
     pages.clear();
@@ -81,8 +81,8 @@ void ScoreboardScene::NextOnClick() {
 
 void ScoreboardScene::ReadScore() {
     int cnt=0;
-    std::string name, score, time;
-    while(*fin>>name>>score>>time){
+    std::string name, score, date, time;
+    while(*fin>>name>>score>>date>>time){
         bool save=true;
         for(auto it: pages){
             if(std::get<0>(it)==name){
@@ -97,7 +97,7 @@ void ScoreboardScene::ReadScore() {
             }
         }
         if(save){
-            pages.insert(std::tuple<std::string, std::string, std::string>(name, score, time));
+            pages.insert(std::tuple<std::string, std::string, std::string, std::string>(name, score, date, time));
             ++cnt;
         }
     }
@@ -118,15 +118,18 @@ void ScoreboardScene::ShowScore(int number) {
         ++itr;
     }
     for(auto it=itl;it!=itr;++it){
-        auto temp1=new Engine::Label(std::get<0>(*it), "pirulen.ttf", 44, halfW-400, halfH * 1 / 2 - 140 + offset * 55, 0, 150, 0, 255, 0.5, 0.5);
-        auto temp2=new Engine::Label(std::get<1>(*it), "pirulen.ttf", 44, halfW-50, halfH * 1 / 2 - 140 + offset * 55, 0, 150, 0, 255, 0.5, 0.5);
-        auto temp3=new Engine::Label(std::get<2>(*it), "pirulen.ttf", 44, halfW+400, halfH * 1 / 2 - 140 + offset * 55, 0, 150, 0, 255, 0.5, 0.5);
+        auto temp1=new Engine::Label(std::get<0>(*it), "pirulen.ttf", 44, 150, halfH * 1 / 2 - 140 + offset * 55, 0, 150, 0, 255, 0, 0.5);
+        auto temp2=new Engine::Label(std::get<1>(*it), "pirulen.ttf", 44, halfW+50, halfH * 1 / 2 - 140 + offset * 55, 0, 150, 0, 255, 1, 0.5);
+        auto temp3=new Engine::Label(std::get<2>(*it), "pirulen.ttf", 44, halfW+100, halfH * 1 / 2 - 140 + offset * 55, 0, 150, 0, 255, 0, 0.5);
+        auto temp4=new Engine::Label(std::get<3>(*it), "pirulen.ttf", 44, w-300, halfH * 1 / 2 - 140 + offset * 55, 0, 150, 0, 255, 0, 0.5);
         AddNewObject(temp1);
         scoreList.push_back(temp1);
         AddNewObject(temp2);
         scoreList.push_back(temp2);
         AddNewObject(temp3);
         scoreList.push_back(temp3);
+        AddNewObject(temp4);
+        scoreList.push_back(temp4);
         ++offset;
     }
 }
@@ -138,8 +141,8 @@ void ScoreboardScene::ClearScore() {
     scoreList.clear();
 }
 
-void AddScoreboard(std::string name, int score, std::string time){
+void AddScoreboard(std::string name, int score, std::string date, std::string time){
     std::ofstream fout("Resource/scoreboard.txt", std::ios_base::app);
-    fout<<'\n'<<name<<' '<<score<<' '<<time;
+    fout<<'\n'<<name<<' '<<score<<' '<<date<<' '<<time;
     fout.close();
 }

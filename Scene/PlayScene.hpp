@@ -10,6 +10,7 @@
 #include "Engine/Point.hpp"
 
 extern int Score;
+extern std::vector<int> LevelScore;
 
 class Turret;
 namespace Engine {

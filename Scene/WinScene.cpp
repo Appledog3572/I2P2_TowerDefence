@@ -41,7 +41,7 @@ void WinScene::Terminate() {
     if(Name.empty()){
         Name="UNKNOWN";
     }
-    AddScoreboard(Name, Score, getNowTime());
+    AddScoreboard(Name, Score, getNowTime()[0], getNowTime()[1]);
 	IScene::Terminate();
 	AudioHelper::StopBGM(bgmId);
 }
@@ -77,13 +77,15 @@ void WinScene::OnKeyDown(int keyCode){
     }
 }
 
-std::string getNowTime(){
+std::vector<std::string> getNowTime(){
     auto tt = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
     struct tm* ptm = localtime(&tt);
     char date[60] = { 0 };
-    sprintf(date, "%d/%02d/%02d_%02d:%02d",
-            (int)ptm->tm_year + 1900, (int)ptm->tm_mon + 1, (int)ptm->tm_mday,
+    char time[10] = { 0 };
+    sprintf(date, "%d/%02d/%02d",
+            (int)ptm->tm_year + 1900, (int)ptm->tm_mon + 1, (int)ptm->tm_mday);
+    sprintf(time, "%02d:%02d",
             (int)ptm->tm_hour, (int)ptm->tm_min);
 
-    return std::string(date);
+    return std::vector<std::string>{date, time};
 }

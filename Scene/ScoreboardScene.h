@@ -7,7 +7,7 @@
 #include "Engine/IScene.hpp"
 
 struct compare{
-    bool operator()(const std::tuple<std::string, std::string, std::string> &lhs, const std::tuple<std::string, std::string, std::string> &rhs) const{
+    bool operator()(const std::tuple<std::string, std::string, std::string, std::string> &lhs, const std::tuple<std::string, std::string, std::string, std::string> &rhs) const{
         if(std::get<1>(lhs)==std::get<1>(rhs)){
             return std::get<0>(rhs) >= std::get<0>(lhs);
         }
@@ -37,6 +37,6 @@ public:
     void ClearScore();
 };
 
-void AddScoreboard(std::string name, int score, std::string time);
+void AddScoreboard(std::string name, int score, std::string date, std::string time);
 
 #endif //INC_2024_I2P2_TOWERDEFENSE_WITH_ANSWER_SCOREBOARDSCENE_H

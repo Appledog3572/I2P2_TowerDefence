@@ -17,6 +17,7 @@
 #include "Turret/LaserTurret.hpp"
 #include "Turret/MachineGunTurret.hpp"
 #include "Turret/MissileTurret.hpp"
+#include "Turret/FreezerTurret.hpp"
 #include "UI/Animation/Plane.hpp"
 #include "Enemy/PlaneEnemy.hpp"
 #include "PlayScene.hpp"
@@ -26,6 +27,11 @@
 #include "Turret/TurretButton.hpp"
 
 int Score = 0;
+std::vector<int> LevelScore={
+        0,
+        1000,
+        3000
+};
 bool PlayScene::DebugMode = false;
 const std::vector<Engine::Point> PlayScene::directions = { Engine::Point(-1, 0), Engine::Point(0, -1), Engine::Point(1, 0), Engine::Point(0, 1) };
 const int PlayScene::MapWidth = 20, PlayScene::MapHeight = 13;
@@ -142,7 +148,7 @@ void PlayScene::Update(float deltaTime) {
 				delete EffectGroup;
 				delete UIGroup;
 				delete imgTarget;*/
-                Score=lives*100 + money*10 - TowerGroup->GetObjects().size()*20;
+                Score=lives*100 + money*10 + LevelScore[MapId];
 				Engine::GameEngine::GetInstance().ChangeScene("win");
 			}
 			continue;
@@ -388,6 +394,14 @@ void PlayScene::ConstructUI() {
 		, 1446, 136, MissileTurret::Price);
 	btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 2));
 	UIGroup->AddNewControlObject(btn);
+    // Button 4
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                           Engine::Sprite("play/tower-base.png", 1522, 136, 0, 0, 0, 0),
+                           Engine::Sprite("play/turret-4-freeze.png", 1522, 136, 0, 0, 0, 0)
+                           , 1522, 136, FreezerTurret::Price);
+    // Reference: Class Member Function Pointer and std::bind.
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 3));
+    UIGroup->AddNewControlObject(btn);
 	// TODO: [CUSTOM-TURRET]: Create a button to support constructing the turret.
 	int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
 	int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
@@ -407,6 +421,8 @@ void PlayScene::UIBtnClicked(int id) {
 		preview = new LaserTurret(0, 0);
 	else if (id == 2 && money >= MissileTurret::Price)
 		preview = new MissileTurret(0, 0);
+    else if (id == 3 && money >= FreezerTurret::Price)
+        preview = new FreezerTurret(0, 0);
 	if (!preview)
 		return;
 	preview->Position = Engine::GameEngine::GetInstance().GetMousePosition();
