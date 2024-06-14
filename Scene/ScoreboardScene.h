@@ -1,5 +1,5 @@
-#ifndef INC_2024_I2P2_TOWERDEFENSE_WITH_ANSWER_SCOREBOARDSCENE_H
-#define INC_2024_I2P2_TOWERDEFENSE_WITH_ANSWER_SCOREBOARDSCENE_H
+#ifndef SCOREBOARDSCENE_H
+#define SCOREBOARDSCENE_H
 
 #include <allegro5/allegro_audio.h>
 #include <memory>
@@ -39,4 +39,4 @@ public:
 
 void AddScoreboard(std::string name, int score, std::string date, std::string time);
 
-#endif //INC_2024_I2P2_TOWERDEFENSE_WITH_ANSWER_SCOREBOARDSCENE_H
+#endif //SCOREBOARDSCENE_H

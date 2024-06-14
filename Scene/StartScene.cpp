@@ -1,7 +1,3 @@
-//
-// Created by Hsuan on 2024/4/10.
-//
-
 #include "StartScene.h"
 #include <allegro5/allegro_audio.h>
 #include <functional>
@@ -24,14 +20,14 @@ void StartScene::Initialize() {
     int halfW = w / 2;
     int halfH = h / 2;
     Engine::ImageButton* btn;
-
+    //title
     AddNewObject(new Engine::Label("Tower Defense", "pirulen.ttf", 120, halfW, halfH / 3 + 50, 10, 255, 255, 255, 0.5, 0.5));
-
+    //play button
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 200 , 400, 100);
     btn->SetOnClickCallback(std::bind(&StartScene::PlayOnClick, this));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Play", "pirulen.ttf", 48, halfW, halfH / 2 + 250, 0, 0, 0, 255, 0.5, 0.5));
-
+    //settings button
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH * 3 / 2 - 50, 400, 100);
     btn->SetOnClickCallback(std::bind(&StartScene::SettingsOnClick, this));
     AddNewControlObject(btn);

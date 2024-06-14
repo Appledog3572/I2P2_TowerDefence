@@ -7,6 +7,7 @@
 #include <queue>
 #include <string>
 #include <memory>
+#include <iostream>
 
 #include "Engine/AudioHelper.hpp"
 #include "UI/Animation/DirtyEffect.hpp"
@@ -48,9 +49,6 @@ Engine::Point PlayScene::GetClientSize() {
 	return Engine::Point(MapWidth * BlockSize, MapHeight * BlockSize);
 }
 void PlayScene::Initialize() {
-	// TODO: [HACKATHON-3-BUG] (1/5): There's a bug in this file, which crashes the game when you lose. Try to find it.
-	// TODO: [HACKATHON-3-BUG] (2/5): Find out the cheat code to test.
-    // TODO: [HACKATHON-3-BUG] (2/5): It should generate a Plane, and add 10000 to the money, but it doesn't work now.
 	mapState.clear();
 	keyStrokes.clear();
 	ticks = 0;
@@ -173,9 +171,6 @@ void PlayScene::Update(float deltaTime) {
 		case 3:
 			EnemyGroup->AddNewObject(enemy = new TankEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
 			break;
-        // TODO: [CUSTOM-ENEMY]: You need to modify 'Resource/enemy1.txt', or 'Resource/enemy2.txt' to spawn the 4th enemy.
-        //         The format is "[EnemyId] [TimeDelay] [Repeat]".
-        // TODO: [CUSTOM-ENEMY]: Enable the creation of the enemy.
 		default:
 			continue;
 		}
@@ -339,7 +334,6 @@ void PlayScene::OnKeyDown(int keyCode) {
         // Hotkey for Shovel.
         UIBtnClicked(4);
     }
-	// TODO: [CUSTOM-TURRET]: Make specific key to create the turret.
 	else if (keyCode >= ALLEGRO_KEY_0 && keyCode <= ALLEGRO_KEY_9) {
 		// Hotkey for Speed up.
 		SpeedMult = keyCode - ALLEGRO_KEY_0;
@@ -361,6 +355,7 @@ void PlayScene::EarnMoney(int money) {
 }
 void PlayScene::ReadMap() {
 	std::string filename = std::string("Resource/map") + std::to_string(MapId) + ".txt";
+
 	// Read map file.
 	char c;
 	std::vector<bool> mapData;
@@ -393,10 +388,9 @@ void PlayScene::ReadMap() {
 				TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
 		}
 	}
+    TileMapGroup->AddNewObject(new Engine::Image("play/Level-" + std::to_string(MapId) + ".png", 0, 0, 1280, 832));
 }
 void PlayScene::ReadEnemyWave() {
-    // TODO: [HACKATHON-3-BUG] (3/5): Trace the code to know how the enemies are created.
-    // TODO: [HACKATHON-3-BUG] (3/5): There is a bug in these files, which let the game only spawn the first enemy, try to fix it.
     std::string filename = std::string("Resource/enemy") + std::to_string(MapId) + ".txt";
 	// Read enemy file.
 	float type, wait, repeat;
@@ -454,7 +448,6 @@ void PlayScene::ConstructUI() {
     // Reference: Class Member Function Pointer and std::bind.
     btn2->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 4));
     UIGroup->AddNewControlObject(btn2);
-	// TODO: [CUSTOM-TURRET]: Create a button to support constructing the turret.
 	int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
 	int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
 	int shift = 135 + 25;
@@ -468,7 +461,6 @@ void PlayScene::UIBtnClicked(int id) {
 		UIGroup->RemoveObject(preview->GetObjectIterator());
     if (shovel_preview)
         UIGroup->RemoveObject(shovel_preview->GetObjectIterator());
-    // TODO: [CUSTOM-TURRET]: On callback, create the turret.
 	if (id == 0 && money >= MachineGunTurret::Price)
 		preview = new MachineGunTurret(0, 0);
 	else if (id == 1 && money >= FreezerTurret::Price)
@@ -538,9 +530,6 @@ std::vector<std::vector<int>> PlayScene::CalculateBFSDistance() {
 	while (!que.empty()) {
 		Engine::Point p = que.front();
 		que.pop();
-		// TODO: [BFS PathFinding] (1/1): Implement a BFS starting from the most right-bottom block in the map.
-		//               For each step you should assign the corresponding distance to the most right-bottom block.
-		//               mapState[y][x] is TILE_DIRT if it is empty.
         for(auto c: directions){
             int newX=p.x + c.x;
             int newY=p.y + c.y;
