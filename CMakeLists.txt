@@ -103,6 +103,8 @@ add_executable(2024_I2P2_TowerDefense_with_answer
         Tool/ToolButton.hpp
         Scene/ShopScene.cpp
         Scene/ShopScene.hpp
+        Scene/SkinScene.cpp
+        Scene/SkinScene.hpp
 
         # TODO: [HACKATHON-1-SCENE] (2/4) Add the new scene source files here
 
