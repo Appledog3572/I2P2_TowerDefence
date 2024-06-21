@@ -10,7 +10,9 @@ class ShopScene final : public Engine::IScene {
 private:
     std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE> bgmInstance;
 public:
+    int money;
     int ItemPrice[3] = {1, 2, 3};
+    int ItemAmount[3];
     Engine::Label* MoneyDisplay;
     Engine::Label* ItemAmountDisplay[3];
     explicit ShopScene() = default;

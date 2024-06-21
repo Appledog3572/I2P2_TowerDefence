@@ -12,6 +12,7 @@
 #include "Scene/ScoreboardScene.h"
 #include "Scene/ShopScene.hpp"
 #include "Scene/SkinScene.hpp"
+#include "Scene/CustomTurretScene.hpp"
 
 int main(int argc, char **argv) {
 	Engine::LOG::SetConfig(true);
@@ -26,6 +27,7 @@ int main(int argc, char **argv) {
     game.AddNewScene("scoreboard", new ScoreboardScene());
     game.AddNewScene("shop", new ShopScene());
     game.AddNewScene("skin", new SkinScene());
+    game.AddNewScene("custom", new CustomTurretScene());
 
 	game.Start("start", 60, 1600, 832);
 	return 0;

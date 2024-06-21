@@ -5,20 +5,23 @@
 #include <iostream>
 
 #include "Engine/GameEngine.hpp"
+#include "Engine/AudioHelper.hpp"
+#include "Engine/Player.hpp"
 #include "UI/Component/ImageButton.hpp"
 #include "UI/Component/Label.hpp"
 #include "PlayScene.hpp"
 #include "ShopScene.hpp"
-#include "Engine/AudioHelper.hpp"
-
-int money = 100;
-int ItemAmount[3] = {0, 0, 0};
+#include "CustomTurretScene.hpp"
 
 void ShopScene::Initialize() {
     int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
     int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
     int halfW = w / 2;
     int halfH = h / 2;
+    money = Player::GetInstance().GetMoney();
+    for(int i=0;i<3;++i){
+        ItemAmount[i] = Player::GetInstance().GetItemAmount(i);
+    }
     Engine::ImageButton *btn;
     //background
     AddNewObject(new Engine::Image("shop/background_dark.jpg", 0, 0, w, h, 0,0));
@@ -61,8 +64,11 @@ void ShopScene::Initialize() {
     }
     //custom turret button
     for(int i=0;i<3;++i){
-        AddNewObject(new Engine::Image("play/turret-" + std::to_string(i + 5) + ".png", halfW / 4 + i * (w * 3 / 16), h * 3 / 4, h / 4, h / 4, 0.5, 0.5));
+        btn = new Engine::ImageButton("play/custom-" + std::to_string(i + 1) + ".png", "play/custom-" + std::to_string(i + 1) + ".png", halfW / 4 + i * (w * 3 / 16) - h / 8, h * 3 / 4 - h / 8, h / 4, h / 4);
+        btn->SetOnClickCallback(std::bind(&ShopScene::TurretOnClick, this, i + 1));
+        AddNewControlObject(btn);
     }
+    //BGM
     bgmInstance = AudioHelper::PlaySample("Sugar Cubes(shop).ogg", true, AudioHelper::BGMVolume);
 }
 
@@ -86,7 +92,9 @@ void ShopScene::ItemOnClick(int number){
 }
 
 void ShopScene::TurretOnClick(int number){
-
+    CustomTurretScene* custom = dynamic_cast<CustomTurretScene*>(Engine::GameEngine::GetInstance().GetScene("custom"));
+    custom->turretID=number;
+    Engine::GameEngine::GetInstance().ChangeScene("custom");
 }
 
 void ShopScene::SkinOnClick() {
