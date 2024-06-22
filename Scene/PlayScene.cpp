@@ -9,20 +9,22 @@
 #include <memory>
 #include <iostream>
 
+#include "PlayScene.hpp"
 #include "Engine/AudioHelper.hpp"
-#include "UI/Animation/DirtyEffect.hpp"
-#include "Enemy/Enemy.hpp"
 #include "Engine/GameEngine.hpp"
 #include "Engine/Group.hpp"
+#include "Engine/Player.hpp"
+#include "Engine/Resources.hpp"
 #include "UI/Component/Label.hpp"
+#include "UI/Animation/DirtyEffect.hpp"
+#include "UI/Animation/Plane.hpp"
 #include "Turret/LaserTurret.hpp"
 #include "Turret/MachineGunTurret.hpp"
 #include "Turret/MissileTurret.hpp"
 #include "Turret/FreezerTurret.hpp"
-#include "UI/Animation/Plane.hpp"
+#include "Turret/CustomTurret.hpp"
 #include "Enemy/PlaneEnemy.hpp"
-#include "PlayScene.hpp"
-#include "Engine/Resources.hpp"
+#include "Enemy/Enemy.hpp"
 #include "Enemy/SoldierEnemy.hpp"
 #include "Enemy/TankEnemy.hpp"
 #include "Turret/TurretButton.hpp"
@@ -411,7 +413,7 @@ void PlayScene::ConstructUI() {
 	UIGroup->AddNewObject(UILives = new Engine::Label(std::string("Life ") + std::to_string(lives), "pirulen.ttf", 24, 1294, 88));
 	TurretButton* btn;
     ToolButton* btn2;
-	// Button 1
+	// Button turret 1
 	btn = new TurretButton("play/floor.png", "play/dirt.png",
 		Engine::Sprite("play/tower-base.png", 1294, 136, 0, 0, 0, 0),
 		Engine::Sprite("play/turret-1.png", 1294, 136 - 8, 0, 0, 0, 0)
@@ -419,21 +421,21 @@ void PlayScene::ConstructUI() {
 	// Reference: Class Member Function Pointer and std::bind.
 	btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 0));
 	UIGroup->AddNewControlObject(btn);
-	// Button 2
+	// Button turret 2
 	btn = new TurretButton("play/floor.png", "play/dirt.png",
 		Engine::Sprite("play/tower-base.png", 1370, 136, 0, 0, 0, 0),
 		Engine::Sprite("play/turret-4-freeze.png", 1370, 136 - 8, 0, 0, 0, 0)
 		, 1370, 136, FreezerTurret::Price);
 	btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 1));
 	UIGroup->AddNewControlObject(btn);
-	// Button 3
+	// Button turret 3
 	btn = new TurretButton("play/floor.png", "play/dirt.png",
 		Engine::Sprite("play/tower-base.png", 1446, 136, 0, 0, 0, 0),
 		Engine::Sprite("play/turret-2.png", 1446, 136 - 8, 0, 0, 0, 0)
 		, 1446, 136, LaserTurret::Price);
 	btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 2));
 	UIGroup->AddNewControlObject(btn);
-    // Button 4
+    // Button turret 4
     btn = new TurretButton("play/floor.png", "play/dirt.png",
                            Engine::Sprite("play/tower-base.png", 1522, 136, 0, 0, 0, 0),
                            Engine::Sprite("play/turret-3.png", 1522, 136, 0, 0, 0, 0)
@@ -441,12 +443,33 @@ void PlayScene::ConstructUI() {
     // Reference: Class Member Function Pointer and std::bind.
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 3));
     UIGroup->AddNewControlObject(btn);
-    // Button 5
+    // Button custom 1
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                           Engine::Sprite("play/tower-base.png", 1294, 212, 0, 0, 0, 0),
+                           Engine::Sprite("play/custom-" + std::to_string(Player::GetInstance().GetCustomData(0).appearance) + ".png", 1294, 212, 0, 0, 0, 0)
+            , 1294, 212, Player::GetInstance().GetCustomData(0).cost);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 4));
+    UIGroup->AddNewControlObject(btn);
+    // Button custom 2
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                           Engine::Sprite("play/tower-base.png", 1370, 212, 0, 0, 0, 0),
+                           Engine::Sprite("play/custom-" + std::to_string(Player::GetInstance().GetCustomData(1).appearance) + ".png", 1370, 212, 0, 0, 0, 0)
+            , 1370, 212, Player::GetInstance().GetCustomData(1).cost);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 5));
+    UIGroup->AddNewControlObject(btn);
+    // Button custom 3
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                           Engine::Sprite("play/tower-base.png", 1446, 212, 0, 0, 0, 0),
+                           Engine::Sprite("play/custom-" + std::to_string(Player::GetInstance().GetCustomData(2).appearance) + ".png", 1446, 212, 0, 0, 0, 0)
+            , 1446, 212, Player::GetInstance().GetCustomData(2).cost);
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 6));
+    UIGroup->AddNewControlObject(btn);
+    // Button tool 1
     btn2 = new ToolButton("play/floor.png", "play/dirt.png",
-                           Engine::Sprite("play/shovel.png", 1294, 212, 0, 0, 0, 0)
-            , 1294, 212);
+                           Engine::Sprite("play/shovel.png", 1294, 288, 0, 0, 0, 0)
+            , 1294, 288);
     // Reference: Class Member Function Pointer and std::bind.
-    btn2->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 4));
+    btn2->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 7));
     UIGroup->AddNewControlObject(btn2);
 	int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
 	int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
@@ -469,7 +492,13 @@ void PlayScene::UIBtnClicked(int id) {
 		preview = new LaserTurret(0, 0);
     else if (id == 3 && money >= MissileTurret::Price)
         preview = new MissileTurret(0, 0);
-    else if (id == 4)
+    else if (id == 4 && money >= Player::GetInstance().GetCustomData(0).cost)
+        preview = new CustomTurret(0, 0, Player::GetInstance().GetCustomData(0));
+    else if (id == 5 && money >= Player::GetInstance().GetCustomData(1).cost)
+        preview = new CustomTurret(0, 0, Player::GetInstance().GetCustomData(1));
+    else if (id == 6 && money >= Player::GetInstance().GetCustomData(2).cost)
+        preview = new CustomTurret(0, 0, Player::GetInstance().GetCustomData(2));
+    else if (id == 7)
         shovel_preview = new Shovel(0, 0);
 	if (!preview && !shovel_preview)
 		return;

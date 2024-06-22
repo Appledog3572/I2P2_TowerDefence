@@ -64,8 +64,8 @@ void ShopScene::Initialize() {
     }
     //custom turret button
     for(int i=0;i<3;++i){
-        btn = new Engine::ImageButton("play/custom-" + std::to_string(i + 1) + ".png", "play/custom-" + std::to_string(i + 1) + ".png", halfW / 4 + i * (w * 3 / 16) - h / 8, h * 3 / 4 - h / 8, h / 4, h / 4);
-        btn->SetOnClickCallback(std::bind(&ShopScene::TurretOnClick, this, i + 1));
+        btn = new Engine::ImageButton("play/custom-" + std::to_string(Player::GetInstance().GetCustomData(i).appearance) + ".png", "play/custom-" + std::to_string(Player::GetInstance().GetCustomData(i).appearance) + ".png", halfW / 4 + i * (w * 3 / 16) - h / 8, h * 3 / 4 - h / 8, h / 4, h / 4);
+        btn->SetOnClickCallback(std::bind(&ShopScene::TurretOnClick, this, i));
         AddNewControlObject(btn);
     }
     //BGM

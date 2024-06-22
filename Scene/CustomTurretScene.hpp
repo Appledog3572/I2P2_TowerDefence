@@ -3,6 +3,7 @@
 #include <allegro5/allegro_audio.h>
 #include <memory>
 #include <string>
+#include <vector>
 #include "Engine/IScene.hpp"
 #include "Engine/Player.hpp"
 
@@ -20,16 +21,14 @@ public:
     Engine::Label* appearanceUI;
     Engine::Label* abilityUI;
     Engine::Label* costUI;
-    std::vector<std::string> abilityList = {
-            "None",
-            "01",
-            "02",
-            "03"
-    };
     explicit CustomTurretScene() = default;
     void Initialize() override;
     void Terminate() override;
     void BackOnClick();
+    void AppearanceNextOnClick();
+    void AppearanceBackOnClick();
+    void AbilityNextOnClick();
+    void AbilityBackOnClick();
     void RadiusSlideOnValueChanged(float value);
     void RateSlideOnValueChanged(float value);
     void DamageSlideOnValueChanged(float value);
