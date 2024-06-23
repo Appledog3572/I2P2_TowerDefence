@@ -101,6 +101,12 @@ add_executable(2024_I2P2_TowerDefense_with_answer
         Tool/Shovel.hpp
         Tool/ToolButton.cpp
         Tool/ToolButton.hpp
+        Props/CoinBox.cpp
+        Props/CoinBox.h
+        Props/PropsButton.cpp
+        Props/PropsButton.h
+        Props/FreeTurret.cpp
+        Props/FreeTurret.h
         Scene/ShopScene.cpp
         Scene/ShopScene.hpp
         Scene/SkinScene.cpp
@@ -119,12 +125,16 @@ add_executable(2024_I2P2_TowerDefense_with_answer
         Scene/GalleryTurretScene.hpp
         Scene/GalleryEnemyScene.cpp
         Scene/GalleryEnemyScene.hpp
-
-        # TODO: [HACKATHON-1-SCENE] (2/4) Add the new scene source files here
-
-
-#        UI/Component/TextInput.cpp
-#        UI/Component/TextInput.hpp
+        Scene/Freezerskin.cpp
+        Scene/Freezerskin.hpp
+        Scene/Laserskin.cpp
+        Scene/Laserskin.hpp
+        Scene/Fireskin.cpp
+        Scene/Fireskin.hpp
+        Scene/Missileskin.cpp
+        Scene/Missileskin.hpp
+        Enemy/TankBossEnemy.cpp
+        Enemy/TankBossEnemy.hpp
 )
 
 IF (WIN32)

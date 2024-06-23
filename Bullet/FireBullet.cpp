@@ -8,11 +8,11 @@
 #include "Engine/Group.hpp"
 #include "Scene/PlayScene.hpp"
 #include "Engine/Point.hpp"
-
+int Fire_level = 1;
 class Turret;
 
 FireBullet::FireBullet(Engine::Point position, Engine::Point forwardDirection, float rotation, Turret* parent) :
-	Bullet("play/bullet-1.png", 500, 1, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent) {
+	Bullet("play/bullet-1.png", 500, 1+Fire_level*0.1, position, forwardDirection, rotation - ALLEGRO_PI / 2, parent) {
 }
 void FireBullet::OnExplode(Enemy* enemy) {
 	std::random_device dev;

@@ -22,6 +22,10 @@ protected:
     virtual void CreateBullet() = 0;
 
 public:
+    int MAX_LEVEL = 5;
+    int level = 1;
+    int upgradeCost = 100;
+    bool canUpgrade = true;
     bool Enabled = true;
     bool Preview = false;
     Enemy* Target = nullptr;
@@ -29,5 +33,8 @@ public:
     void Update(float deltaTime) override;
     void Draw() const override;
 	int GetPrice() const;
+
+    virtual void Upgrade();
+
 };
 #endif // TURRET_HPP

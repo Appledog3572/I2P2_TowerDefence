@@ -13,5 +13,9 @@ public:
     void Initialize() override;
     void Terminate() override;
     void BackOnClick();
+    void FreezerskinOnClick();
+    void LaserskinOnClick();
+    void FireskinOnClick();
+    void MissileskinOnClick();
 };
 #endif //SKINSCENE_HPP

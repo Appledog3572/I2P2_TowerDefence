@@ -8,10 +8,10 @@
 #include "LaserTurret.hpp"
 #include "Scene/PlayScene.hpp"
 #include "Engine/Point.hpp"
-
+int Laserskinchoose = 1;
 const int LaserTurret::Price = 200;
 LaserTurret::LaserTurret(float x, float y) :
-	Turret("play/tower-base.png", "play/turret-2.png", x, y, 300, Price, 0.5) {
+	Turret("play/tower-base.png", Laser_level == 5?"play/turret-10.png":(Laserskinchoose == 1?"play/turret-2.png":"play/turret-7.png"), x, y, 300+20*Laser_level, Price, 0.5) {
 	// Move center downward, since we the turret head is slightly biased upward.
 	Anchor.y += 8.0f / GetBitmapHeight();
 }

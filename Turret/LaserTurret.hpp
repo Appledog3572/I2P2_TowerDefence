@@ -1,7 +1,7 @@
 #ifndef LASERTURRET_HPP
 #define LASERTURRET_HPP
 #include "Turret.hpp"
-
+extern int Laser_level;
 class LaserTurret: public Turret {
 public:
 	static const int Price;

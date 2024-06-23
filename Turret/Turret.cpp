@@ -87,3 +87,18 @@ void Turret::Draw() const {
 int Turret::GetPrice() const {
 	return price;
 }
+void Turret::Upgrade() {
+    if (canUpgrade) {
+        level++;
+        // 更新砲塔屬性，例如攻擊力、射速等
+        //attackPower += 5; // 示例
+        //fireRate += 50;   // 示例
+        // 提升升級費用
+        upgradeCost += 50; // 示例
+        // 根據需求更新 canUpgrade 狀態，例如達到最高等級後不能再升級
+        if (level >= MAX_LEVEL) {
+            canUpgrade = false;
+        }
+    }
+}
+

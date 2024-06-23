@@ -9,8 +9,14 @@
 #include "Engine/IScene.hpp"
 #include "Engine/Point.hpp"
 #include "Tool/Shovel.hpp"
+#include "Props/CoinBox.h"
+#include "Props/FreeTurret.h"
 
 extern int Score;
+extern int Freezerskinchoose;
+extern int Laserskinchoose;
+extern int MachineGunskinchoose;
+extern int Missileskinchoose;
 extern std::vector<int> LevelScore;
 
 class Turret;
@@ -34,6 +40,8 @@ protected:
 	int lives;
 	int money;
 	int SpeedMult;
+    int CoinBox_count;
+    int FreeTurret_count;
 public:
 	static bool DebugMode;
 	static const std::vector<Engine::Point> directions;
@@ -55,12 +63,25 @@ public:
 	Group* EnemyGroup;
 	Group* EffectGroup;
 	Group* UIGroup;
+    Group* LVGroup;
 	Engine::Label* UIMoney;
+    Engine::Label* UIFreeTurret;
 	Engine::Label* UILives;
+    Engine::Label* UICoinBox;
+    Engine::Label* LVFire;
+    Engine::Label* LVLaser;
+    Engine::Label* LVMissile;
+    Engine::Label* LVFreezer;
 	Engine::Image* imgTarget;
+    Engine::Image* Fireimg;
+    Engine::Image* Laserimg;
+    Engine::Image* Missileimg;
+    Engine::Image* Freezerimg;
 	Engine::Sprite* dangerIndicator;
 	Turret* preview;
     Shovel* shovel_preview;
+    CoinBox* CoinBox_preview;
+    FreeTurret* FreeTurret_preview;
 	std::vector<std::vector<TileType>> mapState;
 	std::vector<std::vector<int>> mapDistance;
 	std::list<std::pair<int, float>> enemyWaveData;
@@ -84,6 +105,9 @@ public:
 	void UIBtnClicked(int id);
 	bool CheckSpaceValid(int x, int y);
 	std::vector<std::vector<int>> CalculateBFSDistance();
+    void BackOnClick();
+    void LevelOnClick(int id);
+    void construct_level();
 	// void ModifyReadMapTiles();
 };
 #endif // PLAYSCENE_HPP

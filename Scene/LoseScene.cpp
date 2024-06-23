@@ -8,7 +8,7 @@
 #include "UI/Component/Label.hpp"
 #include "LoseScene.hpp"
 #include "PlayScene.hpp"
-
+#include "Engine/Point.hpp"
 void LoseScene::Initialize() {
 	int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
 	int h = Engine::GameEngine::GetInstance().GetScreenSize().y;

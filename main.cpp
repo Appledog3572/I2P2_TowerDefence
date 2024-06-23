@@ -11,11 +11,15 @@
 #include "Scene/SettingsScene.hpp"
 #include "Scene/ScoreboardScene.h"
 #include "Scene/ShopScene.hpp"
-#include "Scene/SkinScene.hpp"
 #include "Scene/CustomTurretScene.hpp"
 #include "Scene/GalleryScene.hpp"
 #include "Scene/GalleryTurretScene.hpp"
 #include "Scene/GalleryEnemyScene.hpp"
+#include "Scene/SkinScene.hpp"
+#include "Scene/Freezerskin.hpp"
+#include "Scene/Laserskin.hpp"
+#include "Scene/Fireskin.hpp"
+#include "Scene/Missileskin.hpp"
 
 int main(int argc, char **argv) {
 	Engine::LOG::SetConfig(true);
@@ -34,6 +38,10 @@ int main(int argc, char **argv) {
     game.AddNewScene("gallery", new GalleryScene());
     game.AddNewScene("gallery-turret", new GalleryTurretScene());
     game.AddNewScene("gallery-enemy", new GalleryEnemyScene());
+    game.AddNewScene("Freezerskin", new Freezerskin());
+    game.AddNewScene("Laserskin", new Laserskin());
+    game.AddNewScene("Fireskin", new Fireskin());
+    game.AddNewScene("Missileskin", new Missileskin());
 
 	game.Start("start", 60, 1600, 832);
 	return 0;

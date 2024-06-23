@@ -1,7 +1,7 @@
 #ifndef MISSILETURRET_HPP
 #define MISSILETURRET_HPP
 #include "Turret.hpp"
-
+extern int Missile_level;
 class MissileTurret: public Turret {
 public:
 	static const int Price;

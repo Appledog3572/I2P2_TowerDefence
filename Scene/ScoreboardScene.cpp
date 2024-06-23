@@ -1,5 +1,7 @@
 #include <allegro5/allegro_audio.h>
 #include <functional>
+#include <memory>
+#include <vector>
 #include <set>
 #include <fstream>
 #include <list>
@@ -9,6 +11,7 @@
 #include "UI/Component/Label.hpp"
 #include "PlayScene.hpp"
 #include "ScoreboardScene.h"
+#include "Engine/IObject.hpp"
 
 int w, h, halfW, halfH, currentPage, totalPages;
 std::ifstream *fin;

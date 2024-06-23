@@ -34,6 +34,11 @@ void StageSelectScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 2));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Stage 2", "pirulen.ttf", 48, halfW, halfH / 2 +150, 0, 0, 0, 255, 0.5, 0.5));
+    //stage3 button
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW + 220, halfH / 2 + 100, 400, 100);
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 3));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Stage 3", "pirulen.ttf", 48, halfW + 420, halfH / 2 + 150, 0, 0, 0, 255, 0.5, 0.5));
     //scoreboard button
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 250, 400, 100);
     btn->SetOnClickCallback(std::bind(&StageSelectScene::ScoreboardOnClick, this));
@@ -50,12 +55,12 @@ void StageSelectScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Gallery", "pirulen.ttf", 48, halfW - 420, halfH / 2 + 300, 0, 0, 0, 255, 0.5, 0.5));
     // Not safe if release resource while playing, however we only free while change scene, so it's fine.
-	bgmInstance = AudioHelper::PlaySample("select.ogg", true, AudioHelper::BGMVolume);
+    bgmInstance = AudioHelper::PlaySample("select.ogg", true, AudioHelper::BGMVolume);
 }
 void StageSelectScene::Terminate() {
-	AudioHelper::StopSample(bgmInstance);
-	bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
-	IScene::Terminate();
+    AudioHelper::StopSample(bgmInstance);
+    bgmInstance = std::shared_ptr<ALLEGRO_SAMPLE_INSTANCE>();
+    IScene::Terminate();
 }
 void StageSelectScene::BackOnClick(int stage) {
     Engine::GameEngine::GetInstance().ChangeScene("start");

@@ -12,24 +12,29 @@
 #include "PlayScene.hpp"
 #include "Engine/AudioHelper.hpp"
 #include "Engine/GameEngine.hpp"
+#include "Engine/Resources.hpp"
 #include "Engine/Group.hpp"
 #include "Engine/Player.hpp"
 #include "Engine/Resources.hpp"
-#include "UI/Component/Label.hpp"
-#include "UI/Animation/DirtyEffect.hpp"
-#include "UI/Animation/Plane.hpp"
 #include "Turret/LaserTurret.hpp"
 #include "Turret/MachineGunTurret.hpp"
 #include "Turret/MissileTurret.hpp"
 #include "Turret/FreezerTurret.hpp"
-#include "Turret/CustomTurret.hpp"
+#include "UI/Animation/Plane.hpp"
+#include "UI/Animation/DirtyEffect.hpp"
+#include "UI/Component/Label.hpp"
 #include "Enemy/PlaneEnemy.hpp"
 #include "Enemy/Enemy.hpp"
 #include "Enemy/SoldierEnemy.hpp"
 #include "Enemy/TankEnemy.hpp"
+#include "Enemy/TankBossEnemy.hpp"
 #include "Turret/TurretButton.hpp"
 #include "Tool/ToolButton.hpp"
 #include "Tool/Shovel.hpp"
+#include "Props/PropsButton.h"
+#include "Props/FreeTurret.h"
+#include "Turret/CustomTurret.hpp"
+
 
 int Score = 0;
 std::vector<int> LevelScore={
@@ -58,6 +63,12 @@ void PlayScene::Initialize() {
 	lives = 10;
 	money = 150;
 	SpeedMult = 1;
+    CoinBox_count = 2;
+    FreeTurret_count = 2;
+    Freezer_level = 1;
+    Fire_level = 1;
+    Laser_level = 1;
+    Missile_level = 1;
     Score = 0;
 	// Add groups from bottom to top.
 	AddNewObject(TileMapGroup = new Group());
@@ -69,6 +80,7 @@ void PlayScene::Initialize() {
 	AddNewObject(EffectGroup = new Group());
 	// Should support buttons.
 	AddNewControlObject(UIGroup = new Group());
+    AddNewControlObject(LVGroup = new Group());
 	ReadMap();
 	ReadEnemyWave();
 	mapDistance = CalculateBFSDistance();
@@ -77,6 +89,8 @@ void PlayScene::Initialize() {
 	imgTarget->Visible = false;
 	preview = nullptr;
     shovel_preview = nullptr;
+    CoinBox_preview = nullptr;
+    FreeTurret_preview = nullptr;
 	UIGroup->AddNewObject(imgTarget);
 	// Preload Lose Scene
 	deathBGMInstance = Engine::Resources::GetInstance().GetSampleInstance("astronomia.ogg");
@@ -150,6 +164,7 @@ void PlayScene::Update(float deltaTime) {
 				delete BulletGroup;
 				delete EffectGroup;
 				delete UIGroup;
+                delete LVGroup;
 				delete imgTarget;*/
                 Score=lives*100 + money*10 + LevelScore[MapId];
 				Engine::GameEngine::GetInstance().ChangeScene("win");
@@ -173,6 +188,9 @@ void PlayScene::Update(float deltaTime) {
 		case 3:
 			EnemyGroup->AddNewObject(enemy = new TankEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
 			break;
+        case 4:
+            EnemyGroup->AddNewObject(enemy = new TankBossEnemy(SpawnCoordinate.x, SpawnCoordinate.y));
+            break;
 		default:
 			continue;
 		}
@@ -189,6 +207,11 @@ void PlayScene::Update(float deltaTime) {
         shovel_preview->Position = Engine::GameEngine::GetInstance().GetMousePosition();
         // To keep responding when paused.
         shovel_preview->Update(deltaTime);
+    }
+    if (FreeTurret_preview) {
+        FreeTurret_preview->Position = Engine::GameEngine::GetInstance().GetMousePosition();
+        // To keep responding when paused.
+        FreeTurret_preview->Update(deltaTime);
     }
 }
 void PlayScene::Draw() const {
@@ -217,13 +240,17 @@ void PlayScene::OnMouseDown(int button, int mx, int my) {
         UIGroup->RemoveObject(shovel_preview->GetObjectIterator());
         shovel_preview = nullptr;
     }
+    if ((button & 1) && !imgTarget->Visible && FreeTurret_preview) {
+        UIGroup->RemoveObject(FreeTurret_preview->GetObjectIterator());
+        FreeTurret_preview = nullptr;
+    }
 	IScene::OnMouseDown(button, mx, my);
 }
 void PlayScene::OnMouseMove(int mx, int my) {
 	IScene::OnMouseMove(mx, my);
 	const int x = mx / BlockSize;
 	const int y = my / BlockSize;
-	if (!preview && !shovel_preview || x < 0 || x >= MapWidth || y < 0 || y >= MapHeight) {
+	if (!preview && !shovel_preview && !FreeTurret_preview || x < 0 || x >= MapWidth || y < 0 || y >= MapHeight) {
 		imgTarget->Visible = false;
 		return;
 	}
@@ -238,7 +265,7 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
 	const int x = mx / BlockSize;
 	const int y = my / BlockSize;
 	if (button & 1) {
-		if (mapState[y][x] != TILE_OCCUPIED) {
+		if (mapState[y][x] != TILE_OCCUPIED && preview) {
 			if (!preview)
 				return;
 			// Check if valid.
@@ -268,6 +295,38 @@ void PlayScene::OnMouseUp(int button, int mx, int my) {
 			mapState[y][x] = TILE_OCCUPIED;
 			OnMouseMove(mx, my);
 		}
+
+        else if (mapState[y][x] != TILE_OCCUPIED && FreeTurret_preview) {
+            if (!FreeTurret_preview)
+                return;
+            // Check if valid.
+            if (!CheckSpaceValid(x, y)) {
+                Engine::Sprite* sprite;
+                GroundEffectGroup->AddNewObject(sprite = new DirtyEffect("play/target-invalid.png", 1, x * BlockSize + BlockSize / 2, y * BlockSize + BlockSize / 2));
+                sprite->Rotation = 0;
+                return;
+            }
+            // Purchase.
+            //EarnMoney(-preview->GetPrice());
+            // Remove Preview.
+            FreeTurret_preview->GetObjectIterator()->first = false;
+            UIGroup->RemoveObject(FreeTurret_preview->GetObjectIterator());
+            // Construct real turret.
+            FreeTurret_preview->Position.x = x * BlockSize + BlockSize / 2;
+            FreeTurret_preview->Position.y = y * BlockSize + BlockSize / 2;
+            FreeTurret_preview->Enabled = true;
+            FreeTurret_preview->Preview = false;
+            FreeTurret_preview->Tint = al_map_rgba(255, 255, 255, 255);
+            TowerGroup->AddNewObject(FreeTurret_preview);
+            // To keep responding when paused.
+            FreeTurret_preview->Update(0);
+            // Remove Preview.
+            FreeTurret_preview = nullptr;
+
+            mapState[y][x] = TILE_OCCUPIED;
+            OnMouseMove(mx, my);
+        }
+
         else if (mapState[y][x] == TILE_OCCUPIED) {
             if (!shovel_preview)
                 return;
@@ -336,6 +395,14 @@ void PlayScene::OnKeyDown(int keyCode) {
         // Hotkey for Shovel.
         UIBtnClicked(4);
     }
+    else if (keyCode == ALLEGRO_KEY_T) {
+        // Hotkey for Shovel.
+        UIBtnClicked(5);
+    }
+    else if (keyCode == ALLEGRO_KEY_Y) {
+        // Hotkey for Shovel.
+        UIBtnClicked(6);
+    }
 	else if (keyCode >= ALLEGRO_KEY_0 && keyCode <= ALLEGRO_KEY_9) {
 		// Hotkey for Speed up.
 		SpeedMult = keyCode - ALLEGRO_KEY_0;
@@ -356,40 +423,40 @@ void PlayScene::EarnMoney(int money) {
 	UIMoney->Text = std::string("$") + std::to_string(this->money);
 }
 void PlayScene::ReadMap() {
-	std::string filename = std::string("Resource/map") + std::to_string(MapId) + ".txt";
+    std::string filename = std::string("Resource/map") + std::to_string(MapId) + ".txt";
 
-	// Read map file.
-	char c;
-	std::vector<bool> mapData;
-	std::ifstream fin(filename);
-	while (fin >> c) {
-		switch (c) {
-		case '0': mapData.push_back(false); break;
-		case '1': mapData.push_back(true); break;
-		case '\n':
-		case '\r':
-			if (static_cast<int>(mapData.size()) / MapWidth != 0)
-				throw std::ios_base::failure("Map data is corrupted.");
-			break;
-		default: throw std::ios_base::failure("Map data is corrupted.");
-		}
-	}
-	fin.close();
-	// Validate map data.
-	if (static_cast<int>(mapData.size()) != MapWidth * MapHeight)
-		throw std::ios_base::failure("Map data is corrupted.");
-	// Store map in 2d array.
-	mapState = std::vector<std::vector<TileType>>(MapHeight, std::vector<TileType>(MapWidth));
-	for (int i = 0; i < MapHeight; i++) {
-		for (int j = 0; j < MapWidth; j++) {
-			const int num = mapData[i * MapWidth + j];
-			mapState[i][j] = num ? TILE_FLOOR : TILE_DIRT;
-			if (num)
-				TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-			else
-				TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-		}
-	}
+    // Read map file.
+    char c;
+    std::vector<bool> mapData;
+    std::ifstream fin(filename);
+    while (fin >> c) {
+        switch (c) {
+            case '0': mapData.push_back(false); break;
+            case '1': mapData.push_back(true); break;
+            case '\n':
+            case '\r':
+                if (static_cast<int>(mapData.size()) / MapWidth != 0)
+                    throw std::ios_base::failure("Map data is corrupted.");
+                break;
+            default: throw std::ios_base::failure("Map data is corrupted.");
+        }
+    }
+    fin.close();
+    // Validate map data.
+    if (static_cast<int>(mapData.size()) != MapWidth * MapHeight)
+        throw std::ios_base::failure("Map data is corrupted.");
+    // Store map in 2d array.
+    mapState = std::vector<std::vector<TileType>>(MapHeight, std::vector<TileType>(MapWidth));
+    for (int i = 0; i < MapHeight; i++) {
+        for (int j = 0; j < MapWidth; j++) {
+            const int num = mapData[i * MapWidth + j];
+            mapState[i][j] = num ? TILE_FLOOR : TILE_DIRT;
+            if (num)
+                TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+            else
+                TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+        }
+    }
     TileMapGroup->AddNewObject(new Engine::Image("play/Level-" + std::to_string(MapId) + ".png", 0, 0, 1280, 832));
 }
 void PlayScene::ReadEnemyWave() {
@@ -411,34 +478,36 @@ void PlayScene::ConstructUI() {
 	UIGroup->AddNewObject(new Engine::Label(std::string("Stage ") + std::to_string(MapId), "pirulen.ttf", 32, 1294, 0));
 	UIGroup->AddNewObject(UIMoney = new Engine::Label(std::string("$") + std::to_string(money), "pirulen.ttf", 24, 1294, 48));
 	UIGroup->AddNewObject(UILives = new Engine::Label(std::string("Life ") + std::to_string(lives), "pirulen.ttf", 24, 1294, 88));
+    //UIGroup->AddNewObject(UICoinBox = new Engine::Label(std::to_string(CoinBox_count), "pirulen.ttf", 24, 1420, 212));
 	TurretButton* btn;
     ToolButton* btn2;
-	// Button turret 1
+    PropsButton* btn3;
+	// Button turret1
 	btn = new TurretButton("play/floor.png", "play/dirt.png",
 		Engine::Sprite("play/tower-base.png", 1294, 136, 0, 0, 0, 0),
-		Engine::Sprite("play/turret-1.png", 1294, 136 - 8, 0, 0, 0, 0)
+		Engine::Sprite(Fire_level == 5?"play/turret-9.png":(MachineGunskinchoose == 1?"play/turret-1.png":"play/turret-7.png"), 1294, 136 - 8, 0, 0, 0, 0)
 		, 1294, 136, MachineGunTurret::Price);
 	// Reference: Class Member Function Pointer and std::bind.
 	btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 0));
 	UIGroup->AddNewControlObject(btn);
-	// Button turret 2
+	// Button turret2
 	btn = new TurretButton("play/floor.png", "play/dirt.png",
 		Engine::Sprite("play/tower-base.png", 1370, 136, 0, 0, 0, 0),
-		Engine::Sprite("play/turret-4.png", 1370, 136 - 8, 0, 0, 0, 0)
+		Engine::Sprite(Freezer_level == 5?"play/turret-8.png":(Freezerskinchoose == 1?"play/turret-4-freeze.png":"play/turret-7.png"), 1370, 136 - 8, 0, 0, 0, 0)
 		, 1370, 136, FreezerTurret::Price);
 	btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 1));
 	UIGroup->AddNewControlObject(btn);
-	// Button turret 3
+	// Button turret3
 	btn = new TurretButton("play/floor.png", "play/dirt.png",
 		Engine::Sprite("play/tower-base.png", 1446, 136, 0, 0, 0, 0),
-		Engine::Sprite("play/turret-2.png", 1446, 136 - 8, 0, 0, 0, 0)
+		Engine::Sprite(Laser_level == 5?"play/turret-10.png":(Laserskinchoose == 1?"play/turret-2.png":"play/turret-7.png"), 1446, 136 - 8, 0, 0, 0, 0)
 		, 1446, 136, LaserTurret::Price);
 	btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 2));
 	UIGroup->AddNewControlObject(btn);
-    // Button turret 4
+    // Button turret4
     btn = new TurretButton("play/floor.png", "play/dirt.png",
                            Engine::Sprite("play/tower-base.png", 1522, 136, 0, 0, 0, 0),
-                           Engine::Sprite("play/turret-3.png", 1522, 136, 0, 0, 0, 0)
+                           Engine::Sprite(Missile_level == 5?"play/turret-11.png":(Missileskinchoose == 1?"play/turret-3.png":"play/turret-7.png"), 1522, 136, 0, 0, 0, 0)
                            , 1522, 136, MissileTurret::Price);
     // Reference: Class Member Function Pointer and std::bind.
     btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 3));
@@ -466,11 +535,43 @@ void PlayScene::ConstructUI() {
     UIGroup->AddNewControlObject(btn);
     // Button tool 1
     btn2 = new ToolButton("play/floor.png", "play/dirt.png",
-                           Engine::Sprite("play/shovel.png", 1294, 288, 0, 0, 0, 0)
+                          Engine::Sprite("play/shovel.png", 1294, 288, 0, 0, 0, 0)
             , 1294, 288);
     // Reference: Class Member Function Pointer and std::bind.
     btn2->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 7));
     UIGroup->AddNewControlObject(btn2);
+    //button item 1
+
+    btn3 = new PropsButton("play/floor.png", "play/dirt.png",
+                          Engine::Sprite("play/CoinBox.png", 1370, 288, 0, 0, 0, 0)
+            , 1370, 288);
+    // Reference: Class Member Function Pointer and std::bind.
+    btn3->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 8));
+    UIGroup->AddNewControlObject(btn3);
+    UIGroup->AddNewObject(UICoinBox = new Engine::Label(std::to_string(CoinBox_count), "pirulen.ttf", 24, 1415, 288));
+    //button item 2
+
+    btn = new TurretButton("play/floor.png", "play/dirt.png",
+                           Engine::Sprite("play/tower-base.png", 1446, 288, 0, 0, 0, 0),
+                           Engine::Sprite("play/turret-4.png", 1446, 288, 0, 0, 0, 0)
+            , 1446, 288, FreeTurret_count);
+    // Reference: Class Member Function Pointer and std::bind.
+    btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 9));
+    UIGroup->AddNewControlObject(btn);
+
+    UIGroup->AddNewObject(UIFreeTurret = new Engine::Label(std::to_string(FreeTurret_count), "pirulen.ttf", 24, 1491, 288));
+    //button level-up
+
+    int w1 = Engine::GameEngine::GetInstance().GetScreenSize().x;
+    int h1 = Engine::GameEngine::GetInstance().GetScreenSize().y;
+    int halfW = w1 / 2;
+    int halfH = h1 / 2;
+    Engine::ImageButton* btn4;
+    btn4 = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", 1320, halfH * 3 / 2 - 50, 240, 100);
+    btn4->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 10));
+    UIGroup->AddNewControlObject(btn4);
+    UIGroup->AddNewObject(new Engine::Label("LV-Up", "pirulen.ttf", 48, 1440, halfH * 3 / 2, 0, 0, 0, 255, 0.5, 0.5));
+
 	int w = Engine::GameEngine::GetInstance().GetScreenSize().x;
 	int h = Engine::GameEngine::GetInstance().GetScreenSize().y;
 	int shift = 135 + 25;
@@ -484,6 +585,10 @@ void PlayScene::UIBtnClicked(int id) {
 		UIGroup->RemoveObject(preview->GetObjectIterator());
     if (shovel_preview)
         UIGroup->RemoveObject(shovel_preview->GetObjectIterator());
+    if (CoinBox_preview)
+        UIGroup->RemoveObject(CoinBox_preview->GetObjectIterator());
+    if (FreeTurret_preview)
+        UIGroup->RemoveObject(FreeTurret_preview->GetObjectIterator());
 	if (id == 0 && money >= MachineGunTurret::Price)
 		preview = new MachineGunTurret(0, 0);
 	else if (id == 1 && money >= FreezerTurret::Price)
@@ -500,7 +605,23 @@ void PlayScene::UIBtnClicked(int id) {
         preview = new CustomTurret(0, 0, Player::GetInstance().GetCustomData(2));
     else if (id == 7)
         shovel_preview = new Shovel(0, 0);
-	if (!preview && !shovel_preview)
+    else if (id == 8 && CoinBox_count > 0){
+        CoinBox_count--;
+        EarnMoney(500);
+        UICoinBox->Text = std::to_string(CoinBox_count);
+        AudioHelper::PlayAudio("coin.wav");
+        //CoinBox_preview = new CoinBox(0, 0);
+    }
+    else if (id == 9 && FreeTurret_count > 0){
+        FreeTurret_count--;
+        UIFreeTurret->Text = std::to_string(FreeTurret_count);
+        FreeTurret_preview = new FreeTurret(0, 0);
+        //CoinBox_preview = new CoinBox(0, 0);
+    }
+    else if (id == 10){
+        construct_level();
+    }
+	if (!preview && !shovel_preview && !CoinBox_preview && !FreeTurret_preview)
 		return;
     if (preview) {
         preview->Position = Engine::GameEngine::GetInstance().GetMousePosition();
@@ -515,6 +636,13 @@ void PlayScene::UIBtnClicked(int id) {
         shovel_preview->Enabled = false;
         shovel_preview->Preview = true;
         UIGroup->AddNewObject(shovel_preview);
+        OnMouseMove(Engine::GameEngine::GetInstance().GetMousePosition().x, Engine::GameEngine::GetInstance().GetMousePosition().y);
+    }
+    if (FreeTurret_preview) {
+        FreeTurret_preview->Position = Engine::GameEngine::GetInstance().GetMousePosition();
+        FreeTurret_preview->Enabled = false;
+        FreeTurret_preview->Preview = true;
+        UIGroup->AddNewObject(FreeTurret_preview);
         OnMouseMove(Engine::GameEngine::GetInstance().GetMousePosition().x, Engine::GameEngine::GetInstance().GetMousePosition().y);
     }
 }
@@ -569,4 +697,128 @@ std::vector<std::vector<int>> PlayScene::CalculateBFSDistance() {
         }
 	}
 	return map;
+}
+void PlayScene::BackOnClick() {
+    LVGroup->Clear();
+
+}
+
+void PlayScene::LevelOnClick(int id){
+    if(id == 1 && money >= 100 && Fire_level < 5){
+        Fire_level++;
+        LVFire->Text = std::to_string(Fire_level);
+        EarnMoney(-100);
+        AudioHelper::PlayAudio("levelup.wav");
+        if(Fire_level == 5){
+            LVGroup->RemoveObject(Fireimg->GetObjectIterator());
+            Fireimg = new Engine::Image("play/turret-9.png", 420, 100, 150, 150, 0, 0);
+            LVGroup->AddNewObject(Fireimg);
+            UIGroup->Clear();
+            ConstructUI();
+        }
+    }
+    else if(id == 2 && money >= 100 && Laser_level < 5){
+        Laser_level++;
+        LVLaser->Text = std::to_string(Laser_level);
+        EarnMoney(-100);
+        AudioHelper::PlayAudio("levelup.wav");
+        if(Laser_level == 5){
+            LVGroup->RemoveObject(Laserimg->GetObjectIterator());
+            Laserimg = new Engine::Image("play/turret-10.png", 720, 100, 150, 150, 0, 0);
+            LVGroup->AddNewObject(Laserimg);
+            UIGroup->Clear();
+            ConstructUI();
+        }
+
+    }
+    else if(id == 3 && money >= 100 && Missile_level < 5){
+        Missile_level++;
+        LVMissile->Text = std::to_string(Missile_level);
+        EarnMoney(-100);
+        AudioHelper::PlayAudio("levelup.wav");
+        if(Missile_level == 5){
+            LVGroup->RemoveObject(Missileimg->GetObjectIterator());
+            Missileimg = new Engine::Image("play/turret-11.png", 420, 370, 150, 150, 0, 0);
+            LVGroup->AddNewObject(Missileimg);
+            UIGroup->Clear();
+            ConstructUI();
+            imgTarget = new Engine::Image("play/target.png", 0, 0);
+            imgTarget->Visible = false;
+            preview = nullptr;
+            shovel_preview = nullptr;
+            CoinBox_preview = nullptr;
+            FreeTurret_preview = nullptr;
+            UIGroup->AddNewObject(imgTarget);
+        }
+    }
+    else if(id == 4 && money >= 100 && Freezer_level < 5){
+        Freezer_level++;
+        LVFreezer->Text = std::to_string(Freezer_level);
+        EarnMoney(-100);
+        AudioHelper::PlayAudio("levelup.wav");
+        if(Freezer_level == 5){
+            LVGroup->RemoveObject(Freezerimg->GetObjectIterator());
+            Freezerimg = new Engine::Image("play/turret-8.png", 720, 370, 150, 150, 0, 0);
+            LVGroup->AddNewObject(Freezerimg);
+            UIGroup->Clear();
+            ConstructUI();
+        }
+    }
+}
+
+void PlayScene::construct_level(){
+    LVGroup->Clear();
+    //auto it = new Engine::Image("stage-select/dirt.png", 300, 50, 700, 700, 0, 0);
+    LVGroup->AddNewObject(new Engine::Image("stage-select/dirt.png", 300, 50, 700, 700, 0, 0));
+    Engine::ImageButton* btn5;
+    //back button
+    btn5 = new Engine::ImageButton("play/sand.png", "stage-select/floor.png", 300, 650, 200, 100);
+    btn5->SetOnClickCallback(std::bind(&PlayScene::BackOnClick, this));
+    LVGroup->AddNewControlObject(btn5);
+
+    //auto text1 = new Engine::Label("Back", "pirulen.ttf", 48, 400, 700, 0, 0, 0, 255, 0.5, 0.5);
+    LVGroup->AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, 400, 700, 0, 0, 0, 255, 0.5, 0.5));
+    //auto set = std::bind(&PlayScene::BackOnClick, this, it, btn5, text);
+    Fireimg = new Engine::Image(Fire_level == 5?"play/turret-9.png":(MachineGunskinchoose == 1?"play/turret-1.png":"play/turret-7.png"), 420, 100, 150, 150, 0, 0);
+    LVGroup->AddNewObject(Fireimg);
+    Laserimg = new Engine::Image(Laser_level == 5?"play/turret-10.png":(Laserskinchoose == 1?"play/turret-2.png":"play/turret-7.png"), 720, 100, 150, 150, 0, 0);
+    LVGroup->AddNewObject(Laserimg);
+    Missileimg = new Engine::Image(Missile_level == 5?"play/turret-11.png":(Missileskinchoose == 1?"play/turret-3.png":"play/turret-7.png"), 420, 370, 150, 150, 0, 0);
+    LVGroup->AddNewObject(Missileimg);
+    Freezerimg = new Engine::Image(Freezer_level == 5?"play/turret-8.png":(Freezerskinchoose == 1?"play/turret-4-freeze.png":"play/turret-7.png"), 720, 370, 150, 150, 0, 0);
+    LVGroup->AddNewObject(Freezerimg);
+
+    Engine::ImageButton* btn6, *btn7, *btn8, *btn9;
+    btn6 = new Engine::ImageButton("play/sand.png", "stage-select/floor.png", 400, 250, 200, 80);
+    btn6->SetOnClickCallback(std::bind(&PlayScene::LevelOnClick, this, 1));
+    LVGroup->AddNewControlObject(btn6);
+    //auto text2 = new Engine::Label("LV-UP", "pirulen.ttf", 48, 500, 290, 0, 0, 0, 255, 0.5, 0.5);
+    LVGroup->AddNewObject(new Engine::Label("LV-UP", "pirulen.ttf", 48, 500, 290, 0, 0, 0, 255, 0.5, 0.5));
+    //auto level1 = new Engine::Label(std::to_string(Fire_level), "pirulen.ttf", 48, 550, 150, 0, 0, 0, 255, 0.5, 0.5);
+    LVGroup->AddNewObject(LVFire = new Engine::Label(std::to_string(Fire_level), "pirulen.ttf", 48, 580, 150, 0, 0, 0, 255, 0.5, 0.5));
+
+    btn7 = new Engine::ImageButton("play/sand.png", "stage-select/floor.png", 700, 250, 200, 80);
+    btn7->SetOnClickCallback(std::bind(&PlayScene::LevelOnClick, this, 2));
+    LVGroup->AddNewControlObject(btn7);
+    //auto text3 = new Engine::Label("LV-UP", "pirulen.ttf", 48, 800, 290, 0, 0, 0, 255, 0.5, 0.5);
+    LVGroup->AddNewObject(new Engine::Label("LV-UP", "pirulen.ttf", 48, 800, 290, 0, 0, 0, 255, 0.5, 0.5));
+    //auto level2 = new Engine::Label(std::to_string(Laser_level), "pirulen.ttf", 48, 850, 150, 0, 0, 0, 255, 0.5, 0.5);
+    LVGroup->AddNewObject(LVLaser = new Engine::Label(std::to_string(Laser_level), "pirulen.ttf", 48, 880, 150, 0, 0, 0, 255, 0.5, 0.5));
+
+    btn8 = new Engine::ImageButton("play/sand.png", "stage-select/floor.png", 400, 520, 200, 80);
+    btn8->SetOnClickCallback(std::bind(&PlayScene::LevelOnClick, this, 3));
+    LVGroup->AddNewControlObject(btn8);
+    //auto text4 = new Engine::Label("LV-UP", "pirulen.ttf", 48, 500, 560, 0, 0, 0, 255, 0.5, 0.5);
+    LVGroup->AddNewObject(new Engine::Label("LV-UP", "pirulen.ttf", 48, 500, 560, 0, 0, 0, 255, 0.5, 0.5));
+    //auto level3 = new Engine::Label(std::to_string(Missile_level), "pirulen.ttf", 48, 580, 420, 0, 0, 0, 255, 0.5, 0.5);
+    LVGroup->AddNewObject(LVMissile = new Engine::Label(std::to_string(Missile_level), "pirulen.ttf", 48, 580, 420, 0, 0, 0, 255, 0.5, 0.5));
+
+    btn9 = new Engine::ImageButton("play/sand.png", "stage-select/floor.png", 700, 520, 200, 80);
+    btn9->SetOnClickCallback(std::bind(&PlayScene::LevelOnClick, this, 4));
+    LVGroup->AddNewControlObject(btn9);
+    //auto text5 = new Engine::Label("LV-UP", "pirulen.ttf", 48, 800, 560, 0, 0, 0, 255, 0.5, 0.5);
+    LVGroup->AddNewObject(new Engine::Label("LV-UP", "pirulen.ttf", 48, 800, 560, 0, 0, 0, 255, 0.5, 0.5));
+    //auto level4 = new Engine::Label(std::to_string(Freezer_level), "pirulen.ttf", 48, 880, 420, 0, 0, 0, 255, 0.5, 0.5);
+    LVGroup->AddNewObject(LVFreezer = new Engine::Label(std::to_string(Freezer_level), "pirulen.ttf", 48, 880, 420, 0, 0, 0, 255, 0.5, 0.5));
+
 }

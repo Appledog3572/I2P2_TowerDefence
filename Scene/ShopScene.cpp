@@ -55,7 +55,7 @@ void ShopScene::Initialize() {
     }
     //item button
     for(int i=0;i<3;++i){
-        btn = new Engine::ImageButton("shop/item" + std::to_string(i + 1) + ".png", "shop/item" + std::to_string(i + 1) + ".png", halfW / 4 + i * (w * 3 / 16) - h / 8, halfH * 3 / 4 - h / 8,h / 4, h / 4);
+        btn = new Engine::ImageButton("shop/item" + std::to_string(i + 1) + ".png", "shop/item" + std::to_string(i + 1) + "-hover.png", halfW / 4 + i * (w * 3 / 16) - h / 8, halfH * 3 / 4 - h / 8,h / 4, h / 4);
         btn->SetOnClickCallback(std::bind(&ShopScene::ItemOnClick, this, i));
         AddNewControlObject(btn);
         AddNewObject(new Engine::Image("shop/number_background2.png", halfW / 4 + i * (w * 3 / 16) + h / 10, halfH * 3 / 4 + h / 10, 50, 50, 0.5, 0.5));

@@ -8,10 +8,10 @@
 #include "MachineGunTurret.hpp"
 #include "Scene/PlayScene.hpp"
 #include "Engine/Point.hpp"
-
+int MachineGunskinchoose = 1;
 const int MachineGunTurret::Price = 50;
 MachineGunTurret::MachineGunTurret(float x, float y) :
-	Turret("play/tower-base.png", "play/turret-1.png", x, y, 200, Price, 0.5) {
+	Turret("play/tower-base.png", Fire_level == 5?"play/turret-9.png":(MachineGunskinchoose == 1?"play/turret-1.png":"play/turret-7.png"), x, y, 200+20*Fire_level, Price, 0.5) {
 	// Move center downward, since we the turret head is slightly biased upward.
 	Anchor.y += 8.0f / GetBitmapHeight();
 }
