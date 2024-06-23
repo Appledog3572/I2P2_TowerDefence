@@ -13,6 +13,9 @@
 #include "Scene/ShopScene.hpp"
 #include "Scene/SkinScene.hpp"
 #include "Scene/CustomTurretScene.hpp"
+#include "Scene/GalleryScene.hpp"
+#include "Scene/GalleryTurretScene.hpp"
+#include "Scene/GalleryEnemyScene.hpp"
 
 int main(int argc, char **argv) {
 	Engine::LOG::SetConfig(true);
@@ -28,6 +31,9 @@ int main(int argc, char **argv) {
     game.AddNewScene("shop", new ShopScene());
     game.AddNewScene("skin", new SkinScene());
     game.AddNewScene("custom", new CustomTurretScene());
+    game.AddNewScene("gallery", new GalleryScene());
+    game.AddNewScene("gallery-turret", new GalleryTurretScene());
+    game.AddNewScene("gallery-enemy", new GalleryEnemyScene());
 
 	game.Start("start", 60, 1600, 832);
 	return 0;

@@ -113,6 +113,12 @@ add_executable(2024_I2P2_TowerDefense_with_answer
         Turret/CustomTurret.hpp
         Bullet/CustomBullet.cpp
         Bullet/CustomBullet.hpp
+        Scene/GalleryScene.cpp
+        Scene/GalleryScene.hpp
+        Scene/GalleryTurretScene.cpp
+        Scene/GalleryTurretScene.hpp
+        Scene/GalleryEnemyScene.cpp
+        Scene/GalleryEnemyScene.hpp
 
         # TODO: [HACKATHON-1-SCENE] (2/4) Add the new scene source files here
 

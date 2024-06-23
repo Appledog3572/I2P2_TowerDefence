@@ -44,6 +44,11 @@ void StageSelectScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&StageSelectScene::ShopOnClick, this));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Shop", "pirulen.ttf", 48, halfW + 420, halfH / 2 + 300, 0, 0, 0, 255, 0.5, 0.5));
+    //gallery button
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW / 2 - 220, halfH / 2 + 250, 400, 100);
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::GalleryOnClick, this));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Gallery", "pirulen.ttf", 48, halfW - 420, halfH / 2 + 300, 0, 0, 0, 255, 0.5, 0.5));
     // Not safe if release resource while playing, however we only free while change scene, so it's fine.
 	bgmInstance = AudioHelper::PlaySample("select.ogg", true, AudioHelper::BGMVolume);
 }
@@ -65,4 +70,7 @@ void StageSelectScene::ScoreboardOnClick() {
 }
 void StageSelectScene::ShopOnClick() {
     Engine::GameEngine::GetInstance().ChangeScene("shop");
+}
+void StageSelectScene::GalleryOnClick(){
+    Engine::GameEngine::GetInstance().ChangeScene("gallery");
 }

@@ -17,13 +17,13 @@
 
 std::vector<std::string> abilityList = {
         "None",
-        "Double Shoot",
+        "Double",
         "Frozen"
 };
-const int appearanceAmount = 4;
+const int appearanceAmount = 7;
 const int abilityAmount = abilityList.size();
 
-std::string FtoStr(float value) {
+static std::string FtoStr(float value) {
     std::ostringstream stream;
     stream << std::fixed << std::setprecision(1) << value;
     return stream.str();
@@ -111,7 +111,7 @@ void CustomTurretScene::Initialize() {
     radius->SetValue(Data.radius / 1000);
     fireRate->SetValue(1 - (Data.fireRate / 5));
     damage->SetValue(Data.damage / 50);
-    speed->SetValue(Data.speed / 1000);
+    speed->SetValue(Data.speed / 2000);
     //BGM
     bgmInstance = AudioHelper::PlaySample("Sugar Cubes(shop).ogg", true, AudioHelper::BGMVolume);
 }
@@ -195,7 +195,7 @@ void CustomTurretScene::DamageSlideOnValueChanged(float value){
 }
 
 void CustomTurretScene::SpeedSlideOnValueChanged(float value){
-    Data.speed = value * 1000;
+    Data.speed = value * 2000;
     speedUI->Text = std::to_string((int)Data.speed);
     Data.cost = GetCost();
     costUI->Text = std::to_string(Data.cost);

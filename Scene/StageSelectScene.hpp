@@ -15,6 +15,7 @@ public:
     void ScoreboardOnClick();
 	void BackOnClick(int stage);
     void ShopOnClick();
+    void GalleryOnClick();
 };
 
 #endif // STAGESELECTSCENE_HPP
