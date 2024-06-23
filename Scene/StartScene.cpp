@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <fstream>
 
 #include "Engine/AudioHelper.hpp"
 #include "Engine/GameEngine.hpp"
@@ -43,4 +44,16 @@ void StartScene::PlayOnClick() {
 }
 void StartScene::SettingsOnClick() {
     Engine::GameEngine::GetInstance().ChangeScene("settings");
+}
+void StartScene::LoadVolume() {
+    std::string filename = "../Resource/volume.txt";
+    std::ifstream fin(filename);
+    float bv, sv;
+    fin >> bv >> sv;
+
+    AudioHelper::BGMVolume = bv;
+    AudioHelper::SFXVolume = sv;
+}
+void StartScene::LogOutOnClick() {
+    Engine::GameEngine::GetInstance().ChangeScene("login");
 }

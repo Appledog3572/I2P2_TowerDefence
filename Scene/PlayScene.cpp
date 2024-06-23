@@ -167,6 +167,7 @@ void PlayScene::Update(float deltaTime) {
                 delete LVGroup;
 				delete imgTarget;*/
                 Score=lives*100 + money*10 + LevelScore[MapId];
+                Player::GetInstance().SetMoney(Player::GetInstance().GetMoney() + money);
 				Engine::GameEngine::GetInstance().ChangeScene("win");
 			}
 			continue;

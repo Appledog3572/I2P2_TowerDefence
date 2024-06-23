@@ -20,6 +20,8 @@
 #include "Scene/Laserskin.hpp"
 #include "Scene/Fireskin.hpp"
 #include "Scene/Missileskin.hpp"
+#include "Scene/MapEditScene.hpp"
+#include "Scene/LogInScene.hpp"
 
 int main(int argc, char **argv) {
 	Engine::LOG::SetConfig(true);
@@ -42,7 +44,9 @@ int main(int argc, char **argv) {
     game.AddNewScene("Laserskin", new Laserskin());
     game.AddNewScene("Fireskin", new Fireskin());
     game.AddNewScene("Missileskin", new Missileskin());
+    game.AddNewScene("mapeditor", new MapEditScene());
+    game.AddNewScene("login", new LogInScene());
 
-	game.Start("start", 60, 1600, 832);
+	game.Start("login", 60, 1600, 832);
 	return 0;
 }

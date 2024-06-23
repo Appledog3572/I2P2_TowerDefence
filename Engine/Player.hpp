@@ -16,6 +16,8 @@ private:
     static Player player;
     int money;
     int itemAmount[3];
+    float BGM;
+    float SFX;
     customTurret customData[3];
 public:
     static Player& GetInstance();
@@ -26,5 +28,7 @@ public:
     void SetItemAmount(int ID, int amount);
     customTurret GetCustomData(int ID);
     void SetCustomData(int ID, customTurret Data);
+    void SetVolume(float bgm, float sfx);
+    void SavePlayer(int ID);
 };
 #endif //PLAYER_HPP

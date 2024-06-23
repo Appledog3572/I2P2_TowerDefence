@@ -11,5 +11,7 @@ public:
     void Terminate() override;
     void PlayOnClick();
     void SettingsOnClick();
+    void LoadVolume();
+    void LogOutOnClick();
 };
 #endif //STARTSCENE_H

@@ -16,5 +16,6 @@ public:
     void BackOnClick(int stage);
     void ShopOnClick();
     void GalleryOnClick();
+    void MapEditorOnClick();
 };
 #endif // STAGESELECTSCENE_HPP

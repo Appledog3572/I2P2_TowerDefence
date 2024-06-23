@@ -135,6 +135,8 @@ add_executable(2024_I2P2_TowerDefense_with_answer
         Scene/Missileskin.hpp
         Enemy/TankBossEnemy.cpp
         Enemy/TankBossEnemy.hpp
+        Scene/MapEditScene.cpp
+        Scene/LogInScene.cpp
 )
 
 IF (WIN32)

@@ -25,20 +25,20 @@ void StageSelectScene::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Back", "pirulen.ttf", 48, halfW, halfH * 3 / 2, 0, 0, 0, 255, 0.5, 0.5));
     //stage1 button
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 - 50, 400, 100);
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW / 2 - 220, halfH / 2 - 50, 400, 100);
     btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 1));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Stage 1", "pirulen.ttf", 48, halfW, halfH / 2, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Stage 1", "pirulen.ttf", 48, halfW - 420, halfH / 2, 0, 0, 0, 255, 0.5, 0.5));
     //stage2 button
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH /2 + 100, 400, 100);
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH /2 - 50, 400, 100);
     btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 2));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Stage 2", "pirulen.ttf", 48, halfW, halfH / 2 +150, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Stage 2", "pirulen.ttf", 48, halfW, halfH / 2, 0, 0, 0, 255, 0.5, 0.5));
     //stage3 button
-    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW + 220, halfH / 2 + 100, 400, 100);
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW + 220, halfH / 2 - 50, 400, 100);
     btn->SetOnClickCallback(std::bind(&StageSelectScene::PlayOnClick, this, 3));
     AddNewControlObject(btn);
-    AddNewObject(new Engine::Label("Stage 3", "pirulen.ttf", 48, halfW + 420, halfH / 2 + 150, 0, 0, 0, 255, 0.5, 0.5));
+    AddNewObject(new Engine::Label("Stage 3", "pirulen.ttf", 48, halfW + 420, halfH / 2, 0, 0, 0, 255, 0.5, 0.5));
     //scoreboard button
     btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 250, 400, 100);
     btn->SetOnClickCallback(std::bind(&StageSelectScene::ScoreboardOnClick, this));
@@ -54,6 +54,11 @@ void StageSelectScene::Initialize() {
     btn->SetOnClickCallback(std::bind(&StageSelectScene::GalleryOnClick, this));
     AddNewControlObject(btn);
     AddNewObject(new Engine::Label("Gallery", "pirulen.ttf", 48, halfW - 420, halfH / 2 + 300, 0, 0, 0, 255, 0.5, 0.5));
+    //map edit
+    btn = new Engine::ImageButton("stage-select/dirt.png", "stage-select/floor.png", halfW - 200, halfH / 2 + 100, 400, 100);
+    btn->SetOnClickCallback(std::bind(&StageSelectScene::MapEditorOnClick, this));
+    AddNewControlObject(btn);
+    AddNewObject(new Engine::Label("Map editor", "pirulen.ttf", 36, halfW, halfH / 2 + 150, 0, 0, 0, 255, 0.5, 0.5));
     // Not safe if release resource while playing, however we only free while change scene, so it's fine.
     bgmInstance = AudioHelper::PlaySample("select.ogg", true, AudioHelper::BGMVolume);
 }
@@ -78,4 +83,7 @@ void StageSelectScene::ShopOnClick() {
 }
 void StageSelectScene::GalleryOnClick(){
     Engine::GameEngine::GetInstance().ChangeScene("gallery");
+}
+void StageSelectScene::MapEditorOnClick() {
+    Engine::GameEngine::GetInstance().ChangeScene("mapeditor");
 }
