@@ -716,6 +716,13 @@ void PlayScene::LevelOnClick(int id){
             LVGroup->AddNewObject(Fireimg);
             UIGroup->Clear();
             ConstructUI();
+            imgTarget = new Engine::Image("play/target.png", 0, 0);
+            imgTarget->Visible = false;
+            preview = nullptr;
+            shovel_preview = nullptr;
+            CoinBox_preview = nullptr;
+            FreeTurret_preview = nullptr;
+            UIGroup->AddNewObject(imgTarget);
         }
     }
     else if(id == 2 && money >= 100 && Laser_level < 5){
@@ -729,6 +736,13 @@ void PlayScene::LevelOnClick(int id){
             LVGroup->AddNewObject(Laserimg);
             UIGroup->Clear();
             ConstructUI();
+            imgTarget = new Engine::Image("play/target.png", 0, 0);
+            imgTarget->Visible = false;
+            preview = nullptr;
+            shovel_preview = nullptr;
+            CoinBox_preview = nullptr;
+            FreeTurret_preview = nullptr;
+            UIGroup->AddNewObject(imgTarget);
         }
 
     }
@@ -763,6 +777,13 @@ void PlayScene::LevelOnClick(int id){
             LVGroup->AddNewObject(Freezerimg);
             UIGroup->Clear();
             ConstructUI();
+            imgTarget = new Engine::Image("play/target.png", 0, 0);
+            imgTarget->Visible = false;
+            preview = nullptr;
+            shovel_preview = nullptr;
+            CoinBox_preview = nullptr;
+            FreeTurret_preview = nullptr;
+            UIGroup->AddNewObject(imgTarget);
         }
     }
 }
