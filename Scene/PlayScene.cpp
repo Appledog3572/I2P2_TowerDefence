@@ -494,7 +494,7 @@ void PlayScene::ConstructUI() {
 	// Button turret2
 	btn = new TurretButton("play/floor.png", "play/dirt.png",
 		Engine::Sprite("play/tower-base.png", 1370, 136, 0, 0, 0, 0),
-		Engine::Sprite(Freezer_level == 5?"play/turret-8.png":(Freezerskinchoose == 1?"play/turret-4-freeze.png":"play/turret-7.png"), 1370, 136 - 8, 0, 0, 0, 0)
+		Engine::Sprite(Freezer_level == 5?"play/turret-8.png":(Freezerskinchoose == 1?"play/turret-4.png":"play/turret-7.png"), 1370, 136 - 8, 0, 0, 0, 0)
 		, 1370, 136, FreezerTurret::Price);
 	btn->SetOnClickCallback(std::bind(&PlayScene::UIBtnClicked, this, 1));
 	UIGroup->AddNewControlObject(btn);
@@ -786,7 +786,7 @@ void PlayScene::construct_level(){
     LVGroup->AddNewObject(Laserimg);
     Missileimg = new Engine::Image(Missile_level == 5?"play/turret-11.png":(Missileskinchoose == 1?"play/turret-3.png":"play/turret-7.png"), 420, 370, 150, 150, 0, 0);
     LVGroup->AddNewObject(Missileimg);
-    Freezerimg = new Engine::Image(Freezer_level == 5?"play/turret-8.png":(Freezerskinchoose == 1?"play/turret-4-freeze.png":"play/turret-7.png"), 720, 370, 150, 150, 0, 0);
+    Freezerimg = new Engine::Image(Freezer_level == 5?"play/turret-8.png":(Freezerskinchoose == 1?"play/turret-4.png":"play/turret-7.png"), 720, 370, 150, 150, 0, 0);
     LVGroup->AddNewObject(Freezerimg);
 
     Engine::ImageButton* btn6, *btn7, *btn8, *btn9;

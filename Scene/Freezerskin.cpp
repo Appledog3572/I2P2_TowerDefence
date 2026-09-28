@@ -25,7 +25,7 @@ void Freezerskin::Initialize() {
     AddNewControlObject(btn);
     AddNewObject(new Engine::Image("shop/back_arrow.png", 125, 75, 75, 50, 0.5, 0.5));
 
-    AddNewObject(new Engine::Image("play/turret-4-freeze.png", halfW/3-70, 100, 500, 500, 0,0));
+    AddNewObject(new Engine::Image("play/turret-4.png", halfW/3-70, 100, 500, 500, 0,0));
     AddNewObject(new Engine::Image("play/turret-7.png", halfW/3+630, 100, 500, 500, 0,0));
 
     btn2 = new Engine::ImageButton("skin/woodbutton.png", "skin/woodbutton2.png", 200, 400,500, 500);
