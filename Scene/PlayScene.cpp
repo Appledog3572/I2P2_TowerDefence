@@ -428,12 +428,13 @@ void PlayScene::ReadMap() {
 
     // Read map file.
     char c;
-    std::vector<bool> mapData;
+    std::vector<int> mapData;
     std::ifstream fin(filename);
     while (fin >> c) {
         switch (c) {
-            case '0': mapData.push_back(false); break;
-            case '1': mapData.push_back(true); break;
+            case '0': mapData.push_back(0); break;
+            case '1': mapData.push_back(1); break;
+            case '2': mapData.push_back(2); break;
             case '\n':
             case '\r':
                 if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -451,14 +452,22 @@ void PlayScene::ReadMap() {
     for (int i = 0; i < MapHeight; i++) {
         for (int j = 0; j < MapWidth; j++) {
             const int num = mapData[i * MapWidth + j];
-            mapState[i][j] = num ? TILE_FLOOR : TILE_DIRT;
-            if (num)
+            if (num == 2) {
+                mapState[i][j] = TILE_OCCUPIED;
+                TileMapGroup->AddNewObject(new Engine::Image("mapedit/block-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+            }
+            else if (num == 1) {
+                mapState[i][j] = TILE_FLOOR;
                 TileMapGroup->AddNewObject(new Engine::Image("play/floor.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
-            else
+            }
+            else {  
+                mapState[i][j] = TILE_DIRT;
                 TileMapGroup->AddNewObject(new Engine::Image("play/dirt.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+            }
         }
     }
-    TileMapGroup->AddNewObject(new Engine::Image("play/Level-" + std::to_string(MapId) + ".png", 0, 0, 1280, 832));
+    if (MapId != 0)
+        TileMapGroup->AddNewObject(new Engine::Image("play/Level-" + std::to_string(MapId) + ".png", 0, 0, 1280, 832));
 }
 void PlayScene::ReadEnemyWave() {
     std::string filename = std::string("Resource/enemy") + std::to_string(MapId) + ".txt";

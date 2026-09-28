@@ -41,6 +41,7 @@ void MapEditScene::OnMouseUp(int button, int mx, int my) {
     IScene::OnMouseUp(button, mx, my);
     int x = mx / BlockSize;
     int y = my / BlockSize;
+    if (x < 0 || x >= MapWidth || y < 0 || y >= MapHeight) return;
     if(x == 0 && y == 0 || x == 19 && y == 12) return;
     if((button & 1) && state != -1) {
         for(auto it: TileMapGroup->GetObjects()){
@@ -60,9 +61,15 @@ void MapEditScene::OnMouseUp(int button, int mx, int my) {
             mapData[y * MapWidth + x] = 1;
             TileMapGroup->AddNewObject(new Engine::Image("mapedit/block-1.png", x * BlockSize, y * BlockSize, BlockSize, BlockSize));
         }
+        else if(state == 2) {
+            mapState[y][x] = TILE_OCCUPIED;
+            mapData[y * MapWidth + x] = 2;
+            TileMapGroup->AddNewObject(new Engine::Image("mapedit/block-2.png", x * BlockSize, y * BlockSize, BlockSize, BlockSize));
+        }
         else if(state == 3) {
-            mapState[y][x] = TILE_EMPTY;
-            mapData[y * MapWidth + x] = 3;
+            mapState[y][x] = TILE_DIRT;
+            mapData[y * MapWidth + x] = 1;
+            TileMapGroup->AddNewObject(new Engine::Image("mapedit/block-1.png", x * BlockSize, y * BlockSize, BlockSize, BlockSize));
         }
     }
 }
@@ -70,7 +77,7 @@ void MapEditScene::OnKeyDown(int keyCode) {
 
 }
 void MapEditScene::ReadMap() {
-    std::string filename = "../Resource/map0.txt";
+    std::string filename = "Resource/map0.txt";
 
     // Read map file.
     //mapData.clear();
@@ -82,7 +89,6 @@ void MapEditScene::ReadMap() {
         case '0': mapData.push_back(0); break;
         case '1': mapData.push_back(1); break;
         case '2': mapData.push_back(2); break;
-        case '3': mapData.push_back(3); break;
         case '\n':
         case '\r':
             if (static_cast<int>(mapData.size()) / MapWidth != 0)
@@ -100,21 +106,21 @@ void MapEditScene::ReadMap() {
     for (int i = 0; i < MapHeight; i++) {
         for (int j = 0; j < MapWidth; j++) {
             const int num = mapData[i * MapWidth + j];
-            if(num == 2) {
-                mapState[i][j] = TILE_OCCUPIED;
-                TileMapGroup->AddNewObject(new Engine::Image("mapedit/block-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+            if(num == 0) {
+                mapState[i][j] = TILE_DIRT;
+                TileMapGroup->AddNewObject(new Engine::Image("mapedit/block-0.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
             else if (num == 1) {
                 mapState[i][j] = TILE_FLOOR;
                 TileMapGroup->AddNewObject(new Engine::Image("mapedit/block-1.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
-            else if(num == 0) {
-                mapState[i][j] = TILE_DIRT;
-                TileMapGroup->AddNewObject(new Engine::Image("mapedit/block-0.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+            else if(num == 2) {
+                mapState[i][j] = TILE_OCCUPIED;
+                TileMapGroup->AddNewObject(new Engine::Image("mapedit/block-2.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
             else if(num == 3) {
-                mapState[i][j] = TILE_EMPTY;
-                TileMapGroup->AddNewObject(new Engine::Image("mapedit/block-3.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
+                mapState[i][j] = TILE_FLOOR;
+                TileMapGroup->AddNewObject(new Engine::Image("mapedit/block-1.png", j * BlockSize, i * BlockSize, BlockSize, BlockSize));
             }
         }
     }
@@ -163,14 +169,13 @@ void MapEditScene::UIBtnClicked(int id) {
     state = id;
 }
 void MapEditScene::SaveMap() {
-    std::ofstream fout("../Resource/map0.txt", std::ios_base::trunc);
+    std::ofstream fout("Resource/map0.txt", std::ios_base::trunc);
     for (int i = 0; i < MapHeight; i++) {
         for (int j = 0; j < MapWidth; j++) {
             char c;
             if(mapData[i * MapWidth + j] == 0) c = '0';
             else if(mapData[i * MapWidth + j] == 1) c = '1';
             else if(mapData[i * MapWidth + j] == 2) c = '2';
-            else if(mapData[i * MapWidth + j] == 3) c = '3';
             fout << c;
         }
         fout << '\n';
@@ -184,8 +189,7 @@ void MapEditScene::BackOnClick() {
     Engine::GameEngine::GetInstance().ChangeScene("stage-select");
 }
 void MapEditScene::PlayOnClick(int stage) {
-    mapData.clear();
-    mapState.clear();
+    SaveMap();
     PlayScene* scene = dynamic_cast<PlayScene*>(Engine::GameEngine::GetInstance().GetScene("play"));
     scene->MapId = stage;
     Engine::GameEngine::GetInstance().ChangeScene("play");
