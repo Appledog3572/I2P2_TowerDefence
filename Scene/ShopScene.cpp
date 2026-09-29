@@ -43,8 +43,7 @@ void ShopScene::Initialize() {
     AddNewObject(new Engine::Image("shop/plate2.png", w * 11 / 16, halfH / 4, 350, 300, 0.5, 0.5));
     AddNewObject(new Engine::Label("Shop", "pirulen.ttf", 52, w * 11 / 16 + 10, halfH / 4 + 30, 200, 200, 200, 255, 0.5, 0.5));
     //clerk
-    AddNewObject(new Engine::Image("shop/Yang1.png", w * 14 / 16, halfH + 20, halfW * 3 / 8, 0, 0.5, 0.5));
-//    AddNewObject(new Engine::Image("shop/Yang2.png", w * 13 / 16, halfH, halfW * 4 / 8, halfH, 0.5, 0.5));
+    AddNewObject(new Engine::Image("shop/clerk.png", w * 13 / 16, halfH + 20, halfW * 3 / 8, 0, 0.5, 0.5));
     //table
     AddNewObject(new Engine::Image("shop/table.png", w * 5 / 8, h * 5 / 8, halfW * 3 / 4, halfH * 3 / 4 + 75, 0, 0));
     //shelves

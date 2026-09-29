@@ -18,10 +18,11 @@ const int TurretCount = 4;
 const int NumberPerRow = 4;
 const std::vector<std::vector<std::string>> basicStats={
         {"1", "200", "500", "0.5", "None", "50"},
-        {"1.5", "300", "400", "1.5", "Frozen", "100"},
         {"2", "300", "800", "0.25", "Double", "200"},
-        {"4", "1000", "100", "4", "Tracking", "300"}
+        {"4", "1000", "100", "4", "Tracking", "300"},
+        {"1.5", "300", "400", "1.5", "Frozen", "100"}
 };
+const std::vector<std::string> customAbilityNames = {"None", "Double", "Frozen"};
 
 static std::string FtoStr(float value) {
     std::ostringstream stream;
@@ -107,7 +108,7 @@ void GalleryTurretScene::TurretOnClick(int number, bool custom) {
         rangeUI->Text = FtoStr(temp.radius);
         speedUI->Text = FtoStr(temp.speed);
         rateUI->Text = FtoStr(temp.fireRate);
-        abilityUI->Text = std::to_string(temp.ability);
+        abilityUI->Text = customAbilityNames[temp.ability];
         costUI->Text = std::to_string(temp.cost);
     }
     else {
